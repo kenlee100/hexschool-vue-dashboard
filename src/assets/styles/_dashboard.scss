@@ -1,0 +1,37 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+// .layout-content {
+// }
+.sidebar {
+  width: 320px;
+  background: #0f1a34;
+}
+.sidebar-menu {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.data-section {
+  background-color: #f9f9f9;
+  padding-left: 320px;
+}
+.header-bar {
+  height: 84px;
+}
+.profile-info {
+  &::after {
+    display: none;
+  }
+  &__img {
+    width: 50px;
+    height: 50px;
+  }
+}
