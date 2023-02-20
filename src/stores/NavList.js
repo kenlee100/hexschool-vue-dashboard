@@ -4,6 +4,10 @@ export default defineStore("navListMenu", {
   state: () => ({
     navList: [
       {
+        path: "/admin",
+        name: "後台管理",
+      },
+      {
         path: "/admin/productlist",
         name: "行程管理",
       },
