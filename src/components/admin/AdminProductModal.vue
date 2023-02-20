@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: modal 功能待調整 -->
   <div ref="modal" class="modal fade">
     <div class="modal-dialog modal-xl">
       <div class="modal-content border-0">
@@ -13,45 +12,47 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-sm-4">
-              <div class="mb-2">
-                <div class="mb-3">
-                  <label for="imageUrl" class="form-label">主要圖片</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入主要圖片連結"
-                    v-model="newTempContent.imageUrl"
-                  />
-                  <div class="input-group">
+              <div class="image-upload-section d-flex flex-column">
+                <div class="mb-2">
+                  <div class="mb-3">
+                    <label for="imageUrl" class="form-label">主要圖片</label>
                     <input
-                      type="file"
+                      type="text"
                       class="form-control"
-                      name="main-file-upload"
-                      @change="uploadFile('main-file')"
-                      ref="main-file"
+                      placeholder="請輸入主要圖片連結"
+                      v-model="newTempContent.imageUrl"
+                    />
+                    <div class="input-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        name="main-file-upload"
+                        @change="uploadFile('main-file')"
+                        ref="main-file"
+                      />
+                    </div>
+                    <img
+                      v-if="newTempContent.imageUrl"
+                      class="img-fluid"
+                      :src="newTempContent.imageUrl"
+                      alt=""
+                    />
+                    <img
+                      v-else
+                      class="img-fluid"
+                      src="https://placehold.co/640x480?text=No+Photo"
+                      alt=""
                     />
                   </div>
-                  <img
-                    v-if="newTempContent.imageUrl"
-                    class="img-fluid"
-                    :src="newTempContent.imageUrl"
-                    alt=""
-                  />
-                  <img
-                    v-else
-                    class="img-fluid"
-                    src="https://placehold.co/640x480?text=No+Photo"
-                    alt=""
-                  />
                 </div>
-              </div>
-              <div class="mb-3">
-                <button
-                  class="btn btn-outline-primary btn-sm d-block w-100"
-                  @click="createImage"
-                >
-                  新增其他圖片欄位
-                </button>
+                <div class="mb-3">
+                  <button
+                    class="btn btn-outline-primary btn-sm d-block w-100"
+                    @click="createImage"
+                  >
+                    新增其他圖片欄位
+                  </button>
+                </div>
               </div>
               <!-- 判斷 newTempContent.imagesUrl 是一個陣列 -->
               <div

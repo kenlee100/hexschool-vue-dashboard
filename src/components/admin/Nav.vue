@@ -6,7 +6,7 @@
       <router-link
         class="flex w-full h-20 justify-content-center align-items-center text-decoration-none text-white"
         to="/admin"
-        >JAPAN TRIP admin</router-link
+        >admin</router-link
       >
     </div>
     <ul class="sidebar-menu list-unstyled mb-0">
