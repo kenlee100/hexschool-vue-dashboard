@@ -1,6 +1,6 @@
 <template>
   <header
-    class="header-bar sticky-top start-0 top-0 end-0 d-flex align-items-center p-3 bg-white"
+    class="header-bar sticky-top start-0 top-0 end-0 d-flex align-items-center p-3 bg-white shadow-sm"
   >
     <div class="dropdown ms-auto">
       <div

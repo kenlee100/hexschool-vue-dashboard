@@ -11,6 +11,8 @@ import { localize, setLocale } from "@vee-validate/i18n";
 import zhTW from "@vee-validate/i18n/dist/locale/zh_TW.json";
 
 import Loading from "vue-loading-overlay";
+
+import { date, currency } from "@/utils/filters.js";
 import "vue-loading-overlay/dist/css/index.css";
 
 import "@/assets/styles/main.scss";
@@ -25,9 +27,16 @@ configure({
 
 // 設定預設語系
 setLocale("zh_TW");
+
 const app = createApp(App);
 
-app.use(createPinia());
+// 全域註冊
+app.config.globalProperties.$filters = {
+  date,
+  currency,
+};
+const pinia = createPinia();
+app.use(pinia);
 app.use(router);
 app.use(VueAxios, axios);
 app.component("VueLoading", Loading); // 全域元件

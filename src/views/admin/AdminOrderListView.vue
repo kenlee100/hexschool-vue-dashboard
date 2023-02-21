@@ -1,71 +1,80 @@
 <template>
-  <div class="mt-4 mb-4 p-3 bg-white">
-    <table class="table mb-0">
-      <thead>
-        <tr>
-          <th>建立時間</th>
-          <th width="120">購買款項</th>
-          <th width="120" class="text-end">售價</th>
-          <th width="120">是否付款</th>
-          <th width="120">編輯</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in orders" :key="item.id">
-          <td>{{ item.create_at }}</td>
-          <td>
-              <ul class="list-unstyled">
-                <li v-for="product in item.products">{{ product.product.title }}</li>
+  <div class="mt-4 mb-4 p-3 bg-white shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>購買時間</th>
+            <th>客戶資訊</th>
+            <th>購買品項</th>
+            <th class="text-end">應付金額</th>
+            <th width="120">是否付款</th>
+            <th width="120">編輯</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in orders" :key="item.id">
+            <td>{{ item.create_at }}</td>
+            <td>
+              <ul class="list-unstyled mb-0">
+                <li><span>姓名：</span><span>{{ item.user.name }}</span></li>
+                <li><span>Email：</span><span>{{ item.user.email }}</span></li>
               </ul>
-          </td>
-
-          <td class="text-end"></td>
-          <td>
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                :id="item.id"
-                v-model="item.is_paid"
-                :true-value="1"
-                :false-value="0"
-                @change="updatePaid(item)"
-              />
-              <label class="form-check-label" :for="item.id"
-                ><span class="text-success" v-if="item.is_paid">已付款</span>
-                <span class="text-danger" v-else>未付款</span></label
-              >
-            </div>
-          </td>
-          <td>
-            <!-- <div class="btn-group">
-              <button
-                type="button"
-                class="btn btn-outline-primary btn-sm"
-                @click="openModal('edit', item)"
-              >
-                編輯
-              </button>
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm"
-                @click="openModal('delete', item)"
-              >
-                刪除
-              </button>
-            </div> -->
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td>
+                <ol class="list-group list-group-numbered mb-0">
+                  <li class="list-group-item ps-0 border border-0 bg-transparent" v-for="(product, index) in item.products" :key="product.id">{{ product.product.title }}</li>
+                </ol>
+            </td>
+  
+            <td class="text-end">${{ item.total }}</td>
+            <td>
+              <div class="form-check form-switch">
+                <!-- 這裡的 is_paid 是true / false -->
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  :id="item.id"
+                  v-model="item.is_paid"
+                  @change="updatePaid(item)"
+                />
+                <label class="form-check-label" :for="item.id"
+                  ><span class="text-success" v-if="item.is_paid">已付款</span>
+                  <span class="text-danger" v-else>未付款</span></label
+                >
+              </div>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  @click="openModal(item)"
+                >
+                  檢視
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  @click="openModal('delete', item)"
+                >
+                  刪除
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <AdminProductModal
-    ref="productModal"
+  <AdminOrderModal
+    ref="orderModal"
     :temp-content="temp"
     :is-new="isNew"
-    @update-data="getOrder"
-  ></AdminProductModal>
+    @update-paid="updatePaid"
+
+  ></AdminOrderModal>
   <AdminDeleteModal
     ref="deleteProductModal"
     :temp-content="temp"
@@ -80,7 +89,7 @@
 </template>
 <script>
 const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
-import AdminProductModal from "@/components/admin/AdminProductModal.vue";
+import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
 import AdminDeleteModal from "@/components/admin/AdminDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
@@ -89,9 +98,7 @@ export default {
       isLoading: false,
       // 初始商品資料
       orders: [],
-      temp: {
-        imagesUrl: [],
-      },
+      temp: {},
       pagination: {},
       isNew: false,
       productId: "",
@@ -99,7 +106,7 @@ export default {
   },
   components: {
     Pagination,
-    AdminProductModal,
+    AdminOrderModal,
     AdminDeleteModal,
   },
   methods: {
@@ -119,39 +126,43 @@ export default {
           this.isLoading = false;
         });
     },
-    // openModal(openMethod, item) {
-    //   if (openMethod === "new") {
-    //     this.isNew = true;
-    //     this.$refs.productModal.openModal();
+    openModal(item) {
+      console.log(item)
+      // if (openMethod === "new") {
+      //   this.isNew = true;
+        this.temp = JSON.parse(JSON.stringify(item));
+        this.$refs.orderModal.openModal();
 
-    //     this.temp = { imagesUrl: [] };
-    //   } else if (openMethod === "edit") {
-    //     this.isNew = false;
-    //     this.temp = JSON.parse(JSON.stringify(item));
+      //   this.temp = { imagesUrl: [] };
+      // } else if (openMethod === "edit") {
+      //   this.isNew = false;
 
-    //     this.$refs.productModal.openModal();
-    //   } else if (openMethod === "delete") {
-    //     this.temp = JSON.parse(JSON.stringify(item));
-    //     this.$refs.deleteProductModal.openModal();
-    //   }
-    // },
-    // updatePaid(content) {
-    //   this.$http
-    //     .put(
-    //       `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${content.id}`,
-    //       {
-    //         data: content,
-    //       }
-    //     )
-    //     .then((res) => {
-    //       this.getOrder();
-    //       alert(res.data.message);
-    //     })
-    //     .catch((err) => {
-    //       // axios版本不同，err 回傳的資料層級也不同
-    //       alert(err.response.data.message);
-    //     });
-    // },
+      //   this.$refs.orderModal.openModal();
+      // } else if (openMethod === "delete") {
+      //   this.temp = JSON.parse(JSON.stringify(item));
+      //   this.$refs.deleteProductModal.openModal();
+      // }
+    },
+    updatePaid(content) {
+      this.$http
+        .put(
+          `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${content.id}`,
+          {
+            data: {
+             is_paid: content.is_paid,
+            },
+          }
+        )
+        .then((res) => {
+          this.getOrder();
+          this.$refs.orderModal.closeModal();
+          alert(res.data.message);
+        })
+        .catch((err) => {
+          // axios版本不同，err 回傳的資料層級也不同
+          alert(err.response.data.message);
+        });
+    },
   },
   mounted() {
     this.isLoading = true;
