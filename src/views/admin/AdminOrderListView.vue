@@ -14,19 +14,29 @@
         </thead>
         <tbody>
           <tr v-for="item in orders" :key="item.id">
-            <td>{{ item.create_at }}</td>
+            <td>{{ $filters.date(item.create_at) }}</td>
             <td>
               <ul class="list-unstyled mb-0">
-                <li><span>姓名：</span><span>{{ item.user.name }}</span></li>
-                <li><span>Email：</span><span>{{ item.user.email }}</span></li>
+                <li>
+                  <span>姓名：</span><span>{{ item.user.name }}</span>
+                </li>
+                <li>
+                  <span>Email：</span><span>{{ item.user.email }}</span>
+                </li>
               </ul>
             </td>
             <td>
-                <ol class="list-group list-group-numbered mb-0">
-                  <li class="list-group-item ps-0 border border-0 bg-transparent" v-for="(product, index) in item.products" :key="product.id">{{ product.product.title }}</li>
-                </ol>
+              <ol class="list-group list-group-numbered mb-0">
+                <li
+                  class="list-group-item ps-0 border border-0 bg-transparent"
+                  v-for="product in item.products"
+                  :key="product.id"
+                >
+                  {{ product.product.title }}
+                </li>
+              </ol>
             </td>
-  
+
             <td class="text-end">${{ item.total }}</td>
             <td>
               <div class="form-check form-switch">
@@ -50,7 +60,7 @@
                 <button
                   type="button"
                   class="btn btn-outline-primary btn-sm"
-                  @click="openModal(item)"
+                  @click="openModal('view', item)"
                 >
                   檢視
                 </button>
@@ -71,15 +81,13 @@
   <AdminOrderModal
     ref="orderModal"
     :temp-content="temp"
-    :is-new="isNew"
     @update-paid="updatePaid"
-
   ></AdminOrderModal>
-  <AdminDeleteModal
-    ref="deleteProductModal"
+  <AdminOrderDeleteModal
+    ref="deleteOrderModal"
     :temp-content="temp"
     @update-data="getOrder"
-  ></AdminDeleteModal>
+  ></AdminOrderDeleteModal>
   <Pagination
     :pages="pagination"
     @change-page="getOrder"
@@ -90,7 +98,7 @@
 <script>
 const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
-import AdminDeleteModal from "@/components/admin/AdminDeleteModal.vue";
+import AdminOrderDeleteModal from "@/components/admin/AdminOrderDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
@@ -100,22 +108,22 @@ export default {
       orders: [],
       temp: {},
       pagination: {},
-      isNew: false,
       productId: "",
     };
   },
   components: {
     Pagination,
     AdminOrderModal,
-    AdminDeleteModal,
+    AdminOrderDeleteModal,
   },
   methods: {
     // 取得目前頁碼商品資料
     getOrder(num = 1) {
+      this.isLoading = true;
       this.$http
         .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/orders/?page=${num}`)
         .then((res) => {
-          console.log(res)
+          console.log("getOrder", res);
           this.orders = res.data.orders;
           this.pagination = res.data.pagination;
           this.isLoading = false;
@@ -126,33 +134,22 @@ export default {
           this.isLoading = false;
         });
     },
-    openModal(item) {
-      console.log(item)
-      // if (openMethod === "new") {
-      //   this.isNew = true;
+    openModal(openMethod, item) {
+      if (openMethod === "view") {
         this.temp = JSON.parse(JSON.stringify(item));
         this.$refs.orderModal.openModal();
-
-      //   this.temp = { imagesUrl: [] };
-      // } else if (openMethod === "edit") {
-      //   this.isNew = false;
-
-      //   this.$refs.orderModal.openModal();
-      // } else if (openMethod === "delete") {
-      //   this.temp = JSON.parse(JSON.stringify(item));
-      //   this.$refs.deleteProductModal.openModal();
-      // }
+      } else if (openMethod === "delete") {
+        this.temp = JSON.parse(JSON.stringify(item));
+        this.$refs.deleteOrderModal.openModal();
+      }
     },
     updatePaid(content) {
       this.$http
-        .put(
-          `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${content.id}`,
-          {
-            data: {
-             is_paid: content.is_paid,
-            },
-          }
-        )
+        .put(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${content.id}`, {
+          data: {
+            is_paid: content.is_paid,
+          },
+        })
         .then((res) => {
           this.getOrder();
           this.$refs.orderModal.closeModal();

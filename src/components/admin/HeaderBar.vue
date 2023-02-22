@@ -11,8 +11,20 @@
         <div class="profile-info__img w-3 h-3 rounded-circle bg-light"></div>
       </div>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">登出</a></li>
+        <li>
+          <a class="dropdown-item" href="#" @click.prevent="logout">登出</a>
+        </li>
       </ul>
     </div>
   </header>
 </template>
+<script>
+export default {
+  props: {
+    logout: {
+      type: Function,
+      default() {},
+    },
+  },
+};
+</script>

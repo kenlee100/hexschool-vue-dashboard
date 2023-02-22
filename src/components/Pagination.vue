@@ -51,7 +51,7 @@ export default {
   props: {
     pages: {
       type: Object,
-      default: {},
+      default() {},
     },
     //
     getProducts: {
