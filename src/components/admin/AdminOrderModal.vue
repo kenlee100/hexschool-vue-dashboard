@@ -87,19 +87,6 @@
                     <span class="text-danger" v-else>未付款</span></label
                   >
                 </div>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                    v-model="newTempContent.is_paid"
-                  />
-                  <label class="form-check-label" for="flexCheckDefault">
-                    <span v-if="newTempContent.is_paid">已付款</span>
-                    <span v-else>未付款</span>
-                  </label>
-                </div>
               </div>
             </div>
           </div>
@@ -146,7 +133,6 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {

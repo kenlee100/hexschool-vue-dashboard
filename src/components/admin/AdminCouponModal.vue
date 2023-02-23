@@ -1,127 +1,68 @@
 <template>
   <div ref="modal" class="modal fade">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog">
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
           <h5 id="productModalLabel" class="modal-title">
-            <span>訂單細節</span>
+            <span v-if="isNew">新增優惠卷</span>
+            <span v-else>編輯優惠卷</span>
           </h5>
           <button type="button" class="btn-close" @click="closeModal"></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <h3>用戶資料</h3>
-              <table class="table table-striped table-hover mb-0">
-                <tbody v-if="newTempContent.user">
-                  <tr>
-                    <th style="width: 100px">姓名</th>
-                    <td>{{ newTempContent.user.name }}</td>
-                  </tr>
-                  <tr>
-                    <th>Email</th>
-                    <td>{{ newTempContent.user.email }}</td>
-                  </tr>
-                  <tr>
-                    <th>電話</th>
-                    <td>{{ newTempContent.user.tel }}</td>
-                  </tr>
-                  <tr>
-                    <th>地址</th>
-                    <td>{{ newTempContent.user.address }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <h3>訂單細節</h3>
-              <table class="table table-striped table-hover mb-0">
-                <tbody>
-                  <tr>
-                    <th style="width: 100px">訂單編號</th>
-                    <td>{{ newTempContent.id }}</td>
-                  </tr>
-                  <tr>
-                    <th>下單時間</th>
-                    <td>{{ $filters.date(newTempContent.create_at) }}</td>
-                  </tr>
-                  <tr>
-                    <th>付款時間</th>
-                    <td>
-                      <span v-if="newTempContent.paid_date">
-                        {{ $filters.date(newTempContent.paid_date) }}
-                      </span>
-                      <span v-else>時間不正確</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>付款狀態</th>
-                    <td>
-                      <strong v-if="newTempContent.is_paid" class="text-success"
-                        >已付款</strong
-                      >
-                      <span v-else class="text-muted">尚未付款</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>總金額</th>
-                    <td>${{ $filters.currency(newTempContent.total) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="d-flex justify-content-end py-3">
-                <div class="form-check form-switch">
-                  <!-- 這裡的input id與label for 的值要與order list的不同，否則這裡切換後會觸發 order list的修改資料方法 -->
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="switch-paid"
-                    v-model="newTempContent.is_paid"
-                  />
-                  <label class="form-check-label" for="switch-paid"
-                    ><span class="text-success" v-if="newTempContent.is_paid"
-                      >已付款</span
-                    >
-                    <span class="text-danger" v-else>未付款</span></label
-                  >
-                </div>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                    v-model="newTempContent.is_paid"
-                  />
-                  <label class="form-check-label" for="flexCheckDefault">
-                    <span v-if="newTempContent.is_paid">已付款</span>
-                    <span v-else>未付款</span>
-                  </label>
-                </div>
-              </div>
-            </div>
+          <div class="mb-3">
+            <label for="title">標題</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              v-model="newTempContent.title"
+              placeholder="請輸入標題"
+            />
           </div>
-          <div class="row">
-            <div>
-              <h3>選購商品</h3>
-              <table class="table">
-                <thead>
-                  <tr></tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in newTempContent.products" :key="item.id">
-                    <th>
-                      {{ item.product.title }}
-                    </th>
-                    <td>{{ item.qty }} / {{ item.product.unit }}</td>
-                    <td class="text-end">
-                      ${{ $filters.currency(item.final_total) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="mb-3">
+            <label for="coupon_code">優惠碼</label>
+            <input
+              type="text"
+              class="form-control"
+              id="coupon_code"
+              v-model="newTempContent.code"
+              placeholder="請輸入優惠碼"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="due_date">到期日</label>
+            <input
+              type="date"
+              class="form-control"
+              id="due_date"
+              v-model="due_date"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="price">折扣百分比</label>
+            <input
+              type="number"
+              class="form-control"
+              id="price"
+              min="0"
+              v-model.number="newTempContent.percent"
+              placeholder="請輸入折扣百分比"
+            />
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :true-value="1"
+                :false-value="0"
+                v-model="newTempContent.is_enabled"
+                id="is_enabled"
+              />
+              <label class="form-check-label" for="is_enabled">
+                是否啟用
+              </label>
             </div>
           </div>
         </div>
@@ -136,9 +77,9 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="$emit('update-paid', newTempContent)"
+            @click="$emit('update-coupon', newTempContent)"
           >
-            修改付款狀態
+            {{ isNew ? "新增優惠卷" : "更新優惠券" }}
           </button>
         </div>
       </div>
@@ -146,13 +87,13 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {
     return {
       modal: {},
       newTempContent: {},
+      due_date: "",
     };
   },
   props: {
@@ -169,6 +110,13 @@ export default {
   watch: {
     tempContent() {
       this.newTempContent = this.tempContent;
+      const dateAndTime = new Date(this.newTempContent.due_date * 1000)
+        .toISOString()
+        .split("T");
+      [this.due_date] = dateAndTime;
+    },
+    due_date() {
+      this.newTempContent.due_date = Math.floor(new Date(this.due_date) / 1000);
     },
   },
   methods: {

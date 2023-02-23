@@ -24,7 +24,7 @@
           <button
             type="button"
             class="btn btn-danger"
-            @click="deleteItem(tempContent.id)"
+            @click="$emit('delete-order', tempContent.id)"
           >
             確認刪除
           </button>
@@ -34,7 +34,6 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   props: {
@@ -44,22 +43,6 @@ export default {
     },
   },
   methods: {
-    deleteItem(id) {
-      // console.log(this.tempContent)
-      // console.log(id, `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${id}`)
-      this.$http
-        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${id}`)
-        .then((res) => {
-          // 外層傳入 取得所有商品
-          this.$emit("update-data");
-          this.closeModal();
-          alert(res.data.message);
-        })
-        .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
-        });
-    },
     closeModal() {
       this.modal.hide();
     },

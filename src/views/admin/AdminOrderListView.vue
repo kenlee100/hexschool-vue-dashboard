@@ -86,7 +86,7 @@
   <AdminOrderDeleteModal
     ref="deleteOrderModal"
     :temp-content="temp"
-    @update-data="getOrder"
+    @delete-order="deleteItem"
   ></AdminOrderDeleteModal>
   <Pagination
     :pages="pagination"
@@ -132,6 +132,19 @@ export default {
           // 顯示失敗資訊
           alert(`${err.response.data.message}`);
           this.isLoading = false;
+        });
+    },
+    deleteItem(id) {
+      this.$http
+        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${id}`)
+        .then((res) => {
+          this.$refs.deleteOrderModal.closeModal();
+          this.getOrder();
+          alert(res.data.message);
+        })
+        .catch((err) => {
+          // 顯示失敗資訊
+          alert(`${err.response.data.message}`);
         });
     },
     openModal(openMethod, item) {

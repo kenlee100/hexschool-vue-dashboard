@@ -2,80 +2,102 @@
   <div>
     <VueLoading :active="isLoading"></VueLoading>
     <div class="text-end mt-4">
-      <!-- <button class="btn btn-primary" type="button" @click="openCouponModal(true)">
+      <button class="btn btn-primary" type="button" @click="openModal('new')">
         建立新的優惠券
-      </button> -->
+      </button>
     </div>
-    <table class="table mt-4">
-      <thead>
-        <tr>
-          <th>名稱</th>
-          <th>折扣百分比</th>
-          <th>到期日</th>
-          <th>是否啟用</th>
-          <th>編輯</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, key) in coupons" :key="key">
-          <td>{{ item.title }}</td>
-          <td>{{ item.percent }}%</td>
-          <td>{{ $filters.date(item.due_date) }}</td>
-          <td>
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                :id="item.id"
-                v-model="item.is_enabled"
-                :true-value="1"
-                :false-value="0"
-                @change="updateCoupon(item)"
-              />
-              <label class="form-check-label" :for="item.id"
-                ><span class="text-success" v-if="item.is_enabled">啟用</span>
-                <span class="text-danger" v-else>未啟用</span></label
-              >
-            </div>
-          </td>
-          <td>
-            <div class="btn-group">
-              <button
-                class="btn btn-outline-primary btn-sm"
-                @click="openModal(false, item)"
-              >
-                編輯
-              </button>
-              <button
-                class="btn btn-outline-danger btn-sm"
-                @click="openModal(item)"
-              >
-                刪除
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <AdminCouponModal :coupon="tempCoupon" :is-new="isNew" ref="AdminCouponModal" @update-coupon="updateCoupon"/>
-    <!-- <DelModal :item="tempCoupon" ref="delModal" @del-item="delCoupon"/> -->
+    <div class="mt-4 mb-4 p-3 bg-white shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>名稱</th>
+              <th>折扣百分比</th>
+              <th>到期日</th>
+              <th>是否啟用</th>
+              <th>編輯</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, key) in coupons" :key="key">
+              <td>{{ item.title }}</td>
+              <td>{{ item.percent }}%</td>
+              <td>{{ $filters.date(item.due_date) }}</td>
+              <td>
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    :id="item.id"
+                    v-model="item.is_enabled"
+                    :true-value="1"
+                    :false-value="0"
+                    @change="updateCoupon(item)"
+                  />
+                  <label class="form-check-label" :for="item.id"
+                    ><span class="text-success" v-if="item.is_enabled"
+                      >啟用</span
+                    >
+                    <span class="text-danger" v-else>未啟用</span></label
+                  >
+                </div>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    @click="openModal('edit', item)"
+                  >
+                    編輯
+                  </button>
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    @click="openModal('delete', item)"
+                  >
+                    刪除
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <AdminCouponModal
+      :temp-content="temp"
+      :is-new="isNew"
+      ref="couponModal"
+      @update-coupon="updateCoupon"
+    />
+    <AdminCouponDeleteModal
+      :temp-content="temp"
+      ref="deleteCouponModal"
+      @delete-coupon="deleteItem"
+    />
   </div>
 </template>
 <script>
 const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
+import AdminCouponDeleteModal from "@/components/admin/AdminCouponDeleteModal.vue";
 export default {
   data() {
     return {
       isLoading: false,
       isNew: false,
       coupons: [],
-      tempCoupon: {}
+      temp: {
+        title: "",
+        is_enabled: 0,
+        percent: 100,
+        code: "",
+      },
     };
   },
   components: {
-    AdminCouponModal
+    AdminCouponModal,
+    AdminCouponDeleteModal,
   },
   methods: {
     getCoupons() {
@@ -87,7 +109,6 @@ export default {
           }/admin/coupons`
         )
         .then((res) => {
-          console.log(res);
           this.coupons = res.data.coupons;
           this.isLoading = false;
         })
@@ -97,20 +118,36 @@ export default {
         });
     },
     updateCoupon(content) {
-      this.$http
-        .put(
-          `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon/${content.id}`,
-          {
-            data: content,
-          }
-        )
+      let url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon`;
+      let method = "post";
+      // // // 判斷 isNew 是否為 新增
+      if (!this.isNew) {
+        url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon/${content.id}`;
+        method = "put";
+      }
+      this.$http[method](url, {
+        data: content,
+      })
         .then((res) => {
+          this.$refs.couponModal.closeModal();
           this.getCoupons();
           alert(res.data.message);
         })
         .catch((err) => {
-          // axios版本不同，err 回傳的資料層級也不同
           alert(err.response.data.message);
+        });
+    },
+    deleteItem(id) {
+      this.$http
+        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon/${id}`)
+        .then((res) => {
+          this.$refs.deleteCouponModal.closeModal();
+          this.getCoupons();
+          alert(res.data.message);
+        })
+        .catch((err) => {
+          // 顯示失敗資訊
+          alert(`${err.response.data.message}`);
         });
     },
     openModal(openMethod, item) {
@@ -118,14 +155,16 @@ export default {
         this.isNew = true;
         this.$refs.couponModal.openModal();
 
-        this.temp = { imagesUrl: [] };
+        this.temp = {
+          due_date: new Date().getTime() / 1000,
+        };
       } else if (openMethod === "edit") {
         this.isNew = false;
-        this.temp = JSON.parse(JSON.stringify(item));
+        this.temp = { ...item };
 
         this.$refs.couponModal.openModal();
       } else if (openMethod === "delete") {
-        this.temp = JSON.parse(JSON.stringify(item));
+        this.temp = { ...item };
         this.$refs.deleteCouponModal.openModal();
       }
     },

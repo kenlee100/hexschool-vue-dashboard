@@ -186,17 +186,21 @@
                 </textarea>
               </div>
               <div class="mb-3">
-                <div class="form-check">
+                <div class="form-check form-switch">
                   <input
-                    id="is_enabled"
                     class="form-check-input"
                     type="checkbox"
+                    role="switch"
+                    id="switch-activated"
                     :true-value="1"
                     :false-value="0"
                     v-model="newTempContent.is_enabled"
                   />
-                  <label class="form-check-label" for="is_enabled"
-                    >是否啟用</label
+                  <label class="form-check-label" for="switch-activated"
+                    ><span class="text-success" v-if="newTempContent.is_enabled"
+                      >已啟用</span
+                    >
+                    <span class="text-danger" v-else>未啟用</span></label
                   >
                 </div>
               </div>
@@ -211,8 +215,12 @@
           >
             取消
           </button>
-          <button type="button" class="btn btn-primary" @click="updateProduct">
-            確認
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="$emit('update-product', newTempContent)"
+          >
+            {{ isNew ? "新增產品" : "修改產品" }}
           </button>
         </div>
       </div>
@@ -316,28 +324,6 @@ export default {
             alert(err.response.data.message);
           });
       }
-    },
-    async updateProduct() {
-      let url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product`;
-      let method = "post";
-      // // // 判斷 isNew 是否為 新增
-      if (!this.isNew) {
-        url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${this.newTempContent.id}`;
-        method = "put";
-      }
-      this.$http[method](url, {
-        data: this.newTempContent,
-      })
-        .then((res) => {
-          // 外層傳入 取得所有商品
-          this.$emit("update-data");
-          this.closeModal();
-          alert(res.data.message);
-        })
-        .catch((err) => {
-          // axios版本不同，err 回傳的資料層級也不同
-          alert(err.response.data.message);
-        });
     },
   },
   mounted() {
