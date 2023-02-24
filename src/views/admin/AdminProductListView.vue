@@ -78,12 +78,12 @@
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
-    :get-products="getProducts"
+    :get-data="getProducts"
   ></Pagination>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
+const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import AdminProductDeleteModal from "@/components/admin/AdminProductDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
@@ -111,7 +111,7 @@ export default {
     getProducts(num = 1) {
       this.isLoading = true;
       this.$http
-        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/products/?page=${num}`)
+        .get(`${VITE__URL}/api/${VITE__PATH}/admin/products/?page=${num}`)
         .then((res) => {
           this.products = res.data.products;
           this.pagination = res.data.pagination;
@@ -141,7 +141,7 @@ export default {
     },
     deleteItem(id) {
       this.$http
-        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${id}`)
+        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/product/${id}`)
         .then((res) => {
           this.$refs.deleteProductModal.closeModal();
           this.getProducts();
@@ -153,11 +153,11 @@ export default {
         });
     },
     updateProduct(content) {
-      let url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product`;
+      let url = `${VITE__URL}/api/${VITE__PATH}/admin/product`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${content.id}`;
+        url = `${VITE__URL}/api/${VITE__PATH}/admin/product/${content.id}`;
         method = "put";
       }
       this.$http[method](url, {

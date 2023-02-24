@@ -29,7 +29,7 @@ export default {
           name: "推薦行程",
         },
         {
-          path: "/blogs",
+          path: "/article",
           name: "旅行遊記",
         },
         {

@@ -87,7 +87,8 @@
   </div>
 </template>
 <script>
-import * as bootstrap from "bootstrap";
+import modalMixin from "@/mixins/modalMixin.js";
+import Modal from "bootstrap/js/dist/modal";
 export default {
   data() {
     return {
@@ -119,21 +120,13 @@ export default {
       this.newTempContent.due_date = Math.floor(new Date(this.due_date) / 1000);
     },
   },
-  methods: {
-    // 觸發外層關閉modal事件
-    closeModal() {
-      this.modal.hide();
-    },
-    openModal() {
-      this.modal.show();
-    },
-  },
+  mixins: [modalMixin],
   mounted() {
     this.$refs.modal.addEventListener("hidden.bs.modal", () => {
       // 關閉modal時將內部暫存資料清空
       this.newTempContent = {};
     });
-    this.modal = new bootstrap.Modal(this.$refs.modal, {
+    this.modal = new Modal(this.$refs.modal, {
       backdrop: "static",
       keyboard: false,
     });

@@ -123,9 +123,9 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="$emit('update-paid', newTempContent)"
+            @click="$emit('update-article', newTempContent)"
           >
-            修改付款狀態
+            修改文章
           </button>
         </div>
       </div>

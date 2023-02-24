@@ -41,7 +41,7 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL } = import.meta.env;
+const { VITE__URL } = import.meta.env;
 export default {
   data() {
     return {
@@ -54,7 +54,7 @@ export default {
   methods: {
     login() {
       this.$http
-        .post(`${VITE_APP_URL}/admin/signin`, this.loginData)
+        .post(`${VITE__URL}/admin/signin`, this.loginData)
         .then((res) => {
           const { token, expired } = res.data;
           document.cookie = `userToken=${token}; expires=${new Date(expired)};`;

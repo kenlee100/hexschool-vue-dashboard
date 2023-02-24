@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL } = import.meta.env;
+const { VITE__URL } = import.meta.env;
 import { RouterView } from "vue-router";
 import Sidebar from "@/components/admin/Nav.vue";
 import HeaderBar from "@/components/admin/HeaderBar.vue";
@@ -28,7 +28,7 @@ export default {
       if (token) {
         this.$http.defaults.headers.common.Authorization = token;
         this.$http
-          .post(`${VITE_APP_URL}/api/user/check`)
+          .post(`${VITE__URL}/api/user/check`)
           .then(() => {})
           .catch((err) => {
             // 驗證失敗轉到登入
@@ -43,7 +43,7 @@ export default {
     },
     logout() {
       this.$http
-        .post(`${VITE_APP_URL}/logout`)
+        .post(`${VITE__URL}/logout`)
         .then((res) => {
           alert(res.data.message);
           document.cookie = "userToken=;expires=;";

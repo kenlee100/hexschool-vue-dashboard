@@ -228,8 +228,9 @@
   </div>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
-import * as bootstrap from "bootstrap";
+const { VITE__URL, VITE__PATH } = import.meta.env;
+import modalMixin from "@/mixins/modalMixin.js";
+import Modal from "bootstrap/js/dist/modal";
 export default {
   data() {
     return {
@@ -256,14 +257,6 @@ export default {
     },
   },
   methods: {
-    // 觸發外層關閉modal事件
-    closeModal() {
-      this.modal.hide();
-    },
-    openModal() {
-      this.modal.show();
-    },
-
     // 建立圖片欄位
     createImage() {
       // 計算圖片數量
@@ -303,7 +296,7 @@ export default {
         const refFiles = this.$refs[refItem];
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/upload/`, formData)
+          .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
           .then((res) => {
             this.newTempContent.imageUrl = res.data.imageUrl;
           })
@@ -316,7 +309,7 @@ export default {
         const i = parseInt(refFiles.dataset.num);
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/upload/`, formData)
+          .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
           .then((res) => {
             this.newTempContent.imagesUrl[i].imageUrl = res.data.imageUrl;
           })
@@ -326,6 +319,7 @@ export default {
       }
     },
   },
+  mixins: [modalMixin],
   mounted() {
     this.$refs.modal.addEventListener("hidden.bs.modal", () => {
       // 關閉modal時將內部暫存資料清空
@@ -333,7 +327,7 @@ export default {
         imagesUrl: [],
       };
     });
-    this.modal = new bootstrap.Modal(this.$refs.modal, {
+    this.modal = new Modal(this.$refs.modal, {
       backdrop: "static",
       keyboard: false,
     });

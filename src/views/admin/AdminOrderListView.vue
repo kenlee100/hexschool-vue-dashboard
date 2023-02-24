@@ -91,12 +91,12 @@
   <Pagination
     :pages="pagination"
     @change-page="getOrder"
-    :get-products="getOrder"
+    :get-data="getOrder"
   ></Pagination>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
+const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
 import AdminOrderDeleteModal from "@/components/admin/AdminOrderDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
@@ -121,7 +121,7 @@ export default {
     getOrder(num = 1) {
       this.isLoading = true;
       this.$http
-        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/orders/?page=${num}`)
+        .get(`${VITE__URL}/api/${VITE__PATH}/admin/orders/?page=${num}`)
         .then((res) => {
           console.log("getOrder", res);
           this.orders = res.data.orders;
@@ -136,7 +136,7 @@ export default {
     },
     deleteItem(id) {
       this.$http
-        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${id}`)
+        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/order/${id}`)
         .then((res) => {
           this.$refs.deleteOrderModal.closeModal();
           this.getOrder();
@@ -158,7 +158,7 @@ export default {
     },
     updatePaid(content) {
       this.$http
-        .put(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/order/${content.id}`, {
+        .put(`${VITE__URL}/api/${VITE__PATH}/admin/order/${content.id}`, {
           data: {
             is_paid: content.is_paid,
           },

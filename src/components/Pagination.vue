@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-center">
+  <div v-if="pages.total_pages > 1" class="d-flex justify-content-center">
     <nav aria-label="Page navigation">
       <ul class="pagination">
         <li class="page-item" :class="{ disabled: !pages.has_pre }">
@@ -7,7 +7,7 @@
             class="page-link"
             href="#"
             aria-label="Previous"
-            @click.prevent="getProducts(pages.current_page - 1)"
+            @click.prevent="getDatas(pages.current_page - 1)"
           >
             <span aria-hidden="true">&laquo;</span>
           </a>
@@ -37,7 +37,7 @@
             class="page-link"
             href="#"
             aria-label="Next"
-            @click.prevent="getProducts(pages.current_page + 1)"
+            @click.prevent="getDatas(pages.current_page + 1)"
           >
             <span aria-hidden="true">&raquo;</span>
           </a>
@@ -54,11 +54,11 @@ export default {
       default() {},
     },
     //
-    getProducts: {
+    getDatas: {
       type: Function,
       default: () => {},
     },
   },
-  emits: ["change-page"],
+  // emits: ["change-page"],
 };
 </script>

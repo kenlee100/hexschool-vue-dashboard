@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-export default defineStore("navListMenu", {
+export default defineStore("adminNavListMenu", {
   state: () => ({
     navList: [
       // {
@@ -8,11 +8,11 @@ export default defineStore("navListMenu", {
       //   name: "後台管理",
       // },
       {
-        path: "/admin/productlist",
+        path: "/admin/products",
         name: "行程管理",
       },
       {
-        path: "/admin/blog",
+        path: "/admin/article",
         name: "文章管理",
       },
       {

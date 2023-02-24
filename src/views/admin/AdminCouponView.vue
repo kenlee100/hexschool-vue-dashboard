@@ -75,12 +75,18 @@
       ref="deleteCouponModal"
       @delete-coupon="deleteItem"
     />
+    <Pagination
+      :pages="pagination"
+      @change-page="getCoupons"
+      :get-data="getCoupons"
+    />
   </div>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
+const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
 import AdminCouponDeleteModal from "@/components/admin/AdminCouponDeleteModal.vue";
+import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
     return {
@@ -93,23 +99,26 @@ export default {
         percent: 100,
         code: "",
       },
+      pagination: {},
     };
   },
   components: {
     AdminCouponModal,
     AdminCouponDeleteModal,
+    Pagination,
   },
   methods: {
     getCoupons() {
       this.isLoading = true;
       this.$http
         .get(
-          `${import.meta.env.VITE_APP_URL}/api/${
-            import.meta.env.VITE_APP_PATH
+          `${import.meta.env.VITE__URL}/api/${
+            import.meta.env.VITE__PATH
           }/admin/coupons`
         )
         .then((res) => {
           this.coupons = res.data.coupons;
+          this.pagination = res.data.pagination;
           this.isLoading = false;
         })
         .catch((err) => {
@@ -118,11 +127,11 @@ export default {
         });
     },
     updateCoupon(content) {
-      let url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon`;
+      let url = `${VITE__URL}/api/${VITE__PATH}/admin/coupon`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon/${content.id}`;
+        url = `${VITE__URL}/api/${VITE__PATH}/admin/coupon/${content.id}`;
         method = "put";
       }
       this.$http[method](url, {
@@ -139,7 +148,7 @@ export default {
     },
     deleteItem(id) {
       this.$http
-        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/coupon/${id}`)
+        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/coupon/${id}`)
         .then((res) => {
           this.$refs.deleteCouponModal.closeModal();
           this.getCoupons();

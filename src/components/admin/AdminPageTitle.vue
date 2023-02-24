@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import navListMenu from "../../stores/NavList.js";
+import adminNavListMenu from "../../stores/NavList.js";
 import { mapState } from "pinia";
 export default {
   props: {
@@ -18,7 +18,7 @@ export default {
   },
   computed: {
     // mapState(store名稱, ['要取得的值'])
-    ...mapState(navListMenu, ["navList"]),
+    ...mapState(adminNavListMenu, ["navList"]),
     getPath() {
       // 回傳符合navList store的路徑
       return this.navList.filter((item) => item.path === this.$route.path);

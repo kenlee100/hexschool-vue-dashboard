@@ -52,12 +52,12 @@
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
-    :get-products="getProducts"
+    :get-data="getProducts"
   ></Pagination>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
+const { VITE__URL, VITE__PATH } = import.meta.env;
 import { RouterLink } from "vue-router";
 import ProductModal from "@/components/front/ProductModal.vue";
 import Pagination from "@/components/Pagination.vue";
@@ -89,7 +89,7 @@ export default {
       // 賦予讀取狀態id
       this.loadingStatus.loadingItem = content.id;
       this.$http
-        .post(`${VITE_APP_URL}/api/${VITE_APP_PATH}/cart`, {
+        .post(`${VITE__URL}/api/${VITE__PATH}/cart`, {
           data: {
             product_id: content.id,
             qty,
@@ -113,7 +113,7 @@ export default {
     },
     getProducts(num = 1) {
       this.$http
-        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/products?page=${num}`)
+        .get(`${VITE__URL}/api/${VITE__PATH}/products?page=${num}`)
         .then((res) => {
           this.products = res.data.products;
           this.pagination = res.data.pagination;
