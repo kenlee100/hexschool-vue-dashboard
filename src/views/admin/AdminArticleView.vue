@@ -1,8 +1,8 @@
 <template>
   <div class="text-end mt-4">
-    <!-- <button class="btn btn-primary" type="button" @click="openModal(true)">
-      建立新的頁面
-    </button> -->
+    <button class="btn btn-primary" type="button" @click="openModal('new')">
+      建立新的文章
+    </button>
   </div>
   <div class="mt-4 mb-4 p-3 bg-white shadow-sm">
     <div class="table-responsive">
@@ -18,28 +18,41 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="article in articles" :key="article.id">
-            <td>{{ article.title }}</td>
-            <td>{{ article.author }}</td>
-            <td>{{ article.description }}</td>
-            <td>{{ $filters.date(article.create_at) }}</td>
+          <tr v-for="item in articles" :key="item.id">
+            <td>{{ item.title }}</td>
+            <td>{{ item.author }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ $filters.date(item.create_at) }}</td>
             <td>
-              <span v-if="article.isPublic">已上架</span>
-              <span v-else>未上架</span>
+              <!-- 要更新狀態，需取得單一商品，才取的到content內容。要打article/id api -->
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  :id="item.id"
+                  v-model="item.isPublic"
+                  @change="switchUpdate(item)"
+                />
+                <label class="form-check-label" :for="item.id"
+                  ><span class="text-success" v-if="item.isPublic">公開</span>
+                  <span class="text-danger" v-else>不公開</span></label
+                >
+              </div>
             </td>
             <td>
               <div class="btn-group">
                 <button
                   class="btn btn-outline-primary btn-sm"
                   type="button"
-                  @click="openModal('edit', article)"
+                  @click="getArticleItem(item.id)"
                 >
                   編輯
                 </button>
                 <button
                   class="btn btn-outline-danger btn-sm"
                   type="button"
-                  @click="openModal(article)"
+                  @click="openModal('delete', item)"
                 >
                   刪除
                 </button>
@@ -50,39 +63,47 @@
       </table>
     </div>
   </div>
-  <!-- <ArticleModal
-      ref="articleModal"
-      :article="tempArticle"
-      :is-new="isNew"
-      @update-article="updateArticle"
-    ></ArticleModal> -->
   <AdminArticleModalVue
     ref="articleModal"
     :temp-content="temp"
     :is-new="isNew"
-    @update-article="getArticle"
+    @update-article="updateArticle"
   />
+  <DelModal ref="deleteModal" :item="temp" @delete-item="deleteItem" />
+  <Pagination
+    :pages="pagination"
+    @change-page="getArticles"
+    :get-data="getArticles"
+  ></Pagination>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminArticleModalVue from "@/components/admin/AdminArticleModal.vue";
+import DelModal from "@/components/DelModal.vue";
+import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
     return {
       isLoading: false,
+      modal: {},
       articles: [],
-      temp: {},
+      temp: {
+        isPublic: false,
+        create_at: new Date().getTime() / 1000,
+        tag: [],
+      },
       pagination: {},
       isNew: false,
     };
   },
   methods: {
-    getArticle(num = 1) {
+    getArticles(num = 1) {
       this.isLoading = true;
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/articles/?page=${num}`)
         .then((res) => {
+          console.log("res", res);
           this.articles = res.data.articles;
           this.pagination = res.data.pagination;
           this.isLoading = false;
@@ -93,28 +114,49 @@ export default {
           this.isLoading = false;
         });
     },
+    getArticleItem(id) {
+      this.isLoading = true;
+      this.$http
+        .get(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
+        .then((res) => {
+          console.log("res", res);
+          this.openModal("edit", res.data.article);
+          this.isLoading = false;
+        })
+        .catch((err) => {
+          // 顯示失敗資訊
+          alert(`${err.response.data.message}`);
+          this.isLoading = false;
+        });
+    },
     openModal(openMethod, item) {
+      console.log("openMethod, item", openMethod, item);
       if (openMethod === "new") {
         this.isNew = true;
         this.$refs.articleModal.openModal();
 
-        this.temp = { imagesUrl: [] };
+        this.temp = {
+          isPublic: false,
+          create_at: new Date().getTime() / 1000,
+          tag: [],
+        };
       } else if (openMethod === "edit") {
         this.isNew = false;
         this.temp = JSON.parse(JSON.stringify(item));
 
         this.$refs.articleModal.openModal();
       } else if (openMethod === "delete") {
+        console.log("del", this.$refs.deleteModal);
         this.temp = JSON.parse(JSON.stringify(item));
-        // this.$refs.deleteProductModal.openModal();
+        this.$refs.deleteModal.openModal();
       }
     },
     deleteItem(id) {
       this.$http
-        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/product/${id}`)
+        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
         .then((res) => {
-          // this.$refs.deleteProductModal.closeModal();
-          this.getArticle();
+          this.getArticles();
+          this.$refs.deleteModal.closeModal();
           alert(res.data.message);
         })
         .catch((err) => {
@@ -122,7 +164,7 @@ export default {
           alert(`${err.response.data.message}`);
         });
     },
-    updateArticle(content) {
+    async updateArticle(content) {
       let url = `${VITE__URL}/api/${VITE__PATH}/admin/article`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
@@ -134,20 +176,33 @@ export default {
         data: content,
       })
         .then((res) => {
-          this.$refs.productModal.closeModal();
-          this.getArticle();
+          this.$refs.articleModal.closeModal();
+          this.getArticles();
           alert(res.data.message);
         })
         .catch((err) => {
-          // axios版本不同，err 回傳的資料層級也不同
           alert(err.response.data.message);
         });
+    },
+    async switchUpdate(content) {
+      try {
+        const articleItem = await this.$http.get(
+          `${VITE__URL}/api/${VITE__PATH}/admin/article/${content.id}`
+        );
+        const updateContent = {
+          ...articleItem.data.article,
+          isPublic: content.isPublic,
+        };
+        await this.updateArticle(updateContent);
+      } catch (err) {
+        alert(err.response.data.message);
+      }
     },
   },
   mounted() {
     this.isLoading = true;
-    this.getArticle();
+    this.getArticles();
   },
-  components: { AdminArticleModalVue },
+  components: { AdminArticleModalVue, DelModal, Pagination },
 };
 </script>

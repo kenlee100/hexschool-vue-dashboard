@@ -11,10 +11,12 @@ import { localize, setLocale } from "@vee-validate/i18n";
 import zhTW from "@vee-validate/i18n/dist/locale/zh_TW.json";
 
 import Loading from "vue-loading-overlay";
+import CKEditor from "@ckeditor/ckeditor5-vue";
 
 import { date, currency } from "@/utils/filters.js";
-import "vue-loading-overlay/dist/css/index.css";
 
+import "vue-loading-overlay/dist/css/index.css";
+import "bootstrap-icons/font/bootstrap-icons.scss";
 import "@/assets/styles/main.scss";
 
 Object.keys(AllRules).forEach((rule) => {
@@ -39,6 +41,7 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 app.use(VueAxios, axios);
+app.use(CKEditor);
 app.component("VueLoading", Loading); // 全域元件
 
 app.component("Form", Form);

@@ -70,11 +70,7 @@
     :is-new="isNew"
     @update-product="updateProduct"
   ></AdminProductModal>
-  <AdminProductDeleteModal
-    ref="deleteProductModal"
-    :temp-content="temp"
-    @delete-product="deleteItem"
-  ></AdminProductDeleteModal>
+  <DelModal ref="deleteProductModal" :item="temp" @delete-item="deleteItem" />
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
@@ -85,7 +81,7 @@
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
-import AdminProductDeleteModal from "@/components/admin/AdminProductDeleteModal.vue";
+import DelModal from "@/components/DelModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
@@ -104,7 +100,7 @@ export default {
   components: {
     Pagination,
     AdminProductModal,
-    AdminProductDeleteModal,
+    DelModal,
   },
   methods: {
     // 取得目前頁碼商品資料

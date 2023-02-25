@@ -18,6 +18,9 @@
             <td>
               <ul class="list-unstyled mb-0">
                 <li>
+                  <span>訂單編號：</span><span>{{ item.id }}</span>
+                </li>
+                <li>
                   <span>姓名：</span><span>{{ item.user.name }}</span>
                 </li>
                 <li>
@@ -83,11 +86,12 @@
     :temp-content="temp"
     @update-paid="updatePaid"
   ></AdminOrderModal>
-  <AdminOrderDeleteModal
+  <DelModal
     ref="deleteOrderModal"
-    :temp-content="temp"
-    @delete-order="deleteItem"
-  ></AdminOrderDeleteModal>
+    :item="temp"
+    @delete-item="deleteItem"
+    :item-title="temp.id"
+  />
   <Pagination
     :pages="pagination"
     @change-page="getOrder"
@@ -98,7 +102,7 @@
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
-import AdminOrderDeleteModal from "@/components/admin/AdminOrderDeleteModal.vue";
+import DelModal from "@/components/DelModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
@@ -114,7 +118,7 @@ export default {
   components: {
     Pagination,
     AdminOrderModal,
-    AdminOrderDeleteModal,
+    DelModal,
   },
   methods: {
     // 取得目前頁碼商品資料
