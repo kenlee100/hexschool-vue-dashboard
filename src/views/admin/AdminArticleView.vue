@@ -103,7 +103,6 @@ export default {
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/articles/?page=${num}`)
         .then((res) => {
-          console.log("res", res);
           this.articles = res.data.articles;
           this.pagination = res.data.pagination;
           this.isLoading = false;
@@ -119,7 +118,6 @@ export default {
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
         .then((res) => {
-          console.log("res", res);
           this.openModal("edit", res.data.article);
           this.isLoading = false;
         })
@@ -130,7 +128,6 @@ export default {
         });
     },
     openModal(openMethod, item) {
-      console.log("openMethod, item", openMethod, item);
       if (openMethod === "new") {
         this.isNew = true;
         this.$refs.articleModal.openModal();
@@ -146,7 +143,6 @@ export default {
 
         this.$refs.articleModal.openModal();
       } else if (openMethod === "delete") {
-        console.log("del", this.$refs.deleteModal);
         this.temp = JSON.parse(JSON.stringify(item));
         this.$refs.deleteModal.openModal();
       }

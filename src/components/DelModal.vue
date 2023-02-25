@@ -53,20 +53,11 @@ export default {
     },
   },
   mixins: [modalMixin],
-  // methods: {
-  //   openModal() {
-  //     this.modal.show();
-  //   },
-  //   closeModal() {
-  //     this.modal.hide();
-  //   },
-  // },
   mounted() {
     this.modal = new Modal(this.$refs.modal, {
       backdrop: "static",
       keyboard: false,
     });
-    // console.log("this.modal", this.modal);
   },
 };
 </script>

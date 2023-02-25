@@ -127,7 +127,6 @@ export default {
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/orders/?page=${num}`)
         .then((res) => {
-          console.log("getOrder", res);
           this.orders = res.data.orders;
           this.pagination = res.data.pagination;
           this.isLoading = false;

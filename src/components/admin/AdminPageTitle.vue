@@ -24,8 +24,5 @@ export default {
       return this.navList.filter((item) => item.path === this.$route.path);
     },
   },
-  mounted() {
-    console.log(this.$route.path);
-  },
 };
 </script>
