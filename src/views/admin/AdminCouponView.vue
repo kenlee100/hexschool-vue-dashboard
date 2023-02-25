@@ -104,13 +104,13 @@ export default {
     Pagination,
   },
   methods: {
-    getCoupons() {
+    getCoupons(num = 1) {
       this.isLoading = true;
       this.$http
         .get(
           `${import.meta.env.VITE__URL}/api/${
             import.meta.env.VITE__PATH
-          }/admin/coupons`
+          }/admin/coupons?page=${num}`
         )
         .then((res) => {
           this.coupons = res.data.coupons;

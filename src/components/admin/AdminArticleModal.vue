@@ -187,7 +187,6 @@ export default {
         tag: this.tempContent.tag || [],
         isPublic: this.tempContent.isPublic || false,
       };
-      console.log("this.create_at", this.create_at);
       // 陣列解構賦值
       [this.create_at, this.secondVal] = new Date(
         this.newTempContent.create_at * 1000
@@ -199,8 +198,6 @@ export default {
       // new Date(this.newTempContent.create_at * 1000).toISOString() ===> 2023-02-22T00:00:00.000Z
       // new Date(this.newTempContent.create_at * 1000).toISOString().split("T") ===> ['2023-02-17', '00:00:00.000Z']
       // [this.create_at] = ['2023-02-17', '00:00:00.000Z'] ===> 左側只有一個 this.create_at，所以對應右側位置的值，只取出'2023-02-17'。 此時 this.create_at = '2023-02-17'
-
-      console.log("[this.create_at]", this.create_at, ",", this.secondVal);
     },
     create_at() {
       this.newTempContent.create_at = Math.floor(
