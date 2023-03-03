@@ -46,24 +46,12 @@
               class="form-control"
               id="price"
               min="0"
+              max="100"
               v-model.number="newTempContent.percent"
               placeholder="請輸入折扣百分比"
             />
           </div>
           <div class="mb-3">
-            <!-- <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                :true-value="1"
-                :false-value="0"
-                v-model="newTempContent.is_enabled"
-                id="is_enabled"
-              />
-              <label class="form-check-label" for="is_enabled">
-                是否啟用
-              </label>
-            </div> -->
             <div class="form-check form-switch">
               <input
                 class="form-check-input"
