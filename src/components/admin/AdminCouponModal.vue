@@ -51,7 +51,7 @@
             />
           </div>
           <div class="mb-3">
-            <div class="form-check">
+            <!-- <div class="form-check">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -63,6 +63,23 @@
               <label class="form-check-label" for="is_enabled">
                 是否啟用
               </label>
+            </div> -->
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="switch-coupon"
+                v-model="newTempContent.is_enabled"
+                :true-value="1"
+                :false-value="0"
+              />
+              <label class="form-check-label" for="switch-coupon"
+                ><span class="text-success" v-if="newTempContent.is_enabled"
+                  >啟用</span
+                >
+                <span class="text-danger" v-else>未啟用</span></label
+              >
             </div>
           </div>
         </div>
