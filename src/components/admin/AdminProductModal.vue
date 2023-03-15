@@ -165,25 +165,35 @@
               <hr />
               <div class="mb-3">
                 <label for="description" class="form-label">產品描述</label>
-                <textarea
+                <!-- <textarea
                   id="description"
                   type="text"
                   class="form-control"
                   placeholder="請輸入產品描述"
                   v-model="newTempContent.description"
                 >
-                </textarea>
+                </textarea> -->
+                <ckeditor
+                  :editor="editor"
+                  :config="editorConfig"
+                  v-model="newTempContent.description"
+                ></ckeditor>
               </div>
               <div class="mb-3">
                 <label for="content" class="form-label">說明內容</label>
-                <textarea
+                <!-- <textarea
                   id="description"
                   type="text"
                   class="form-control"
                   placeholder="請輸入說明內容"
                   v-model="newTempContent.content"
                 >
-                </textarea>
+                </textarea> -->
+                <ckeditor
+                  :editor="editor"
+                  :config="editorConfig"
+                  v-model="newTempContent.content"
+                ></ckeditor>
               </div>
               <div class="mb-3">
                 <div class="form-check form-switch">
@@ -231,12 +241,17 @@
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 export default {
   data() {
     return {
       modal: {},
       newTempContent: {
         imagesUrl: [],
+      },
+      editor: ClassicEditor,
+      editorConfig: {
+        toolbar: ["heading", "typing", "bold", "italic", "|", "link"],
       },
     };
   },
