@@ -6,7 +6,7 @@
 </template>
 <script>
 import { RouterView } from "vue-router";
-import Navbar from "../components/front/Nav.vue";
+import Navbar from "../components/front/NavBar.vue";
 export default {
   components: { RouterView, Navbar },
 };

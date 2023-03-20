@@ -70,18 +70,18 @@
     @update-article="updateArticle"
   />
   <DelModal ref="deleteModal" :item="temp" @delete-item="deleteItem" />
-  <Pagination
+  <PaginationComponent
     :pages="pagination"
     @change-page="getArticles"
     :get-data="getArticles"
-  ></Pagination>
+  ></PaginationComponent>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminArticleModalVue from "@/components/admin/AdminArticleModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 export default {
   data() {
     return {
@@ -199,6 +199,6 @@ export default {
     this.isLoading = true;
     this.getArticles();
   },
-  components: { AdminArticleModalVue, DelModal, Pagination },
+  components: { AdminArticleModalVue, DelModal, PaginationComponent },
 };
 </script>

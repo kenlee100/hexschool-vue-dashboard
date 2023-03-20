@@ -71,7 +71,7 @@
       @update-coupon="updateCoupon"
     />
     <DelModal ref="deleteCouponModal" :item="temp" @delete-item="deleteItem" />
-    <Pagination
+    <PaginationComponent
       :pages="pagination"
       @change-page="getCoupons"
       :get-data="getCoupons"
@@ -82,7 +82,7 @@
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 export default {
   data() {
     return {
@@ -101,7 +101,7 @@ export default {
   components: {
     AdminCouponModal,
     DelModal,
-    Pagination,
+    PaginationComponent,
   },
   methods: {
     getCoupons(num = 1) {
