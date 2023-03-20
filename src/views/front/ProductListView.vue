@@ -49,18 +49,18 @@
     :id="productId"
     :open-modal="openModal"
   ></ProductModal>
-  <Pagination
+  <PaginationComponent
     :pages="pagination"
     @change-page="getProducts"
     :get-data="getProducts"
-  ></Pagination>
+  ></PaginationComponent>
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import { RouterLink } from "vue-router";
 import ProductModal from "@/components/front/ProductModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 export default {
   data() {
     return {
@@ -76,7 +76,7 @@ export default {
       productId: "",
     };
   },
-  components: { RouterLink, ProductModal, Pagination },
+  components: { RouterLink, ProductModal, PaginationComponent },
   methods: {
     openModal(id) {
       // id為外層帶入 productId

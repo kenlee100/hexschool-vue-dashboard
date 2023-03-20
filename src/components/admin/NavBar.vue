@@ -1,5 +1,5 @@
 <template>
-  <nav
+  <div
     class="sidebar position-fixed start-0 top-0 bottom-0 z-10 d-flex flex-column h-100 overflow-x-hidden overflow-y-auto"
   >
     <div class="brand-section flex-shrink-0 p-4">
@@ -18,7 +18,7 @@
         >
       </li>
     </ul>
-  </nav>
+  </div>
 </template>
 <script>
 // const { VITE__URL } = import.meta.env;
