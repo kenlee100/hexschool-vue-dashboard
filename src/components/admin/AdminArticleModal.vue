@@ -106,10 +106,11 @@
               </div>
               <div class="mb-3">
                 <ckeditor
+                  ref="ckeditorContent"
                   :editor="editor"
                   :config="editorConfig"
-                  v-model="newTempContent.content"
                 ></ckeditor>
+                <!-- <CKEditor ref="ckeditorContent" :editor="editor" :config="editorConfig"></CKEditor> -->
               </div>
               <div class="mb-3">
                 <div class="form-check form-switch">
@@ -154,7 +155,10 @@
 <script>
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import CKEditor from "@/Ckeditor.vue";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import "../../build/ckeditor.js";
+
 export default {
   data() {
     return {
@@ -165,8 +169,32 @@ export default {
       create_at: 0,
       editor: ClassicEditor,
       editorConfig: {
-        toolbar: ["heading", "typing", "bold", "italic", "|", "link"],
+        toolbar: {
+          items: [
+            "undo",
+            "redo",
+            "|",
+            "heading",
+            "bold",
+            "italic",
+            "|",
+            "link",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "|",
+            "insertTable",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "uploadImage",
+            "blockQuote",
+          ],
+        },
       },
+      // plugins: [Essentials],
     };
   },
   props: {
@@ -206,6 +234,9 @@ export default {
     },
   },
   mixins: [modalMixin],
+  // components: {
+  //   CKEditor,
+  // },
   mounted() {
     this.$refs.modal.addEventListener("hidden.bs.modal", () => {
       // 關閉modal時將內部暫存資料清空
@@ -217,6 +248,18 @@ export default {
       backdrop: "static",
       keyboard: false,
     });
+    ClassicEditor.create(this.$refs.ckeditorContent, {})
+      .then((editor) => {
+        window.editor = editor;
+      })
+      .catch((error) => {
+        console.error("Oops, something went wrong!");
+        // console.error(
+        //   "Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:"
+        // );
+        // console.warn("Build id: 6vvzitvhg3i3-r519x1e752f9");
+        console.error(error);
+      });
   },
 };
 </script>
