@@ -1,53 +1,34 @@
 <template>
-  <div ref="ckeditorContent" :editor="editor" :config="editorConfig"></div>
+  <div ref="ckeditorContent"></div>
 </template>
 <script>
-import "../../build/ckeditor.js";
+import ClassicEditor from "../../utils/ckeditor.js";
 export default {
   data() {
     return {
-      editor: ClassicEditor,
-      editorConfig: {
-        toolbar: {
-          items: [
-            "undo",
-            "redo",
-            "|",
-            "heading",
-            "bold",
-            "italic",
-            "|",
-            "link",
-            "|",
-            "bulletedList",
-            "numberedList",
-            "|",
-            "|",
-            "insertTable",
-            "|",
-            "outdent",
-            "indent",
-            "|",
-            "uploadImage",
-            "blockQuote",
-          ],
-        },
-      },
+      newEditor: "",
     };
   },
+  props: ["text"],
   mounted() {
-    ClassicEditor.create(this.$refs.ckeditorContent, {})
+    console.log("this.$refs.ckeditorContent", this.$refs.ckeditorContent);
+    ClassicEditor
+      // Note that you do not have to specify the plugin and toolbar configuration — using defaults from the build.
+      .create(this.$refs.ckeditorContent)
       .then((editor) => {
-        window.editor = editor;
+        console.log(editor.model.document);
+        // console.log('get',editor.getData())
+        // editor.setData(this.text)
+        // this.newEditor = editor
+        // console.log("Editor was initialized", editor.model.document);
+        editor.model.document.on("change:data", () => {
+          console.log("The data has changed!");
+        });
       })
       .catch((error) => {
-        console.error("Oops, something went wrong!");
-        // console.error(
-        //   "Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:"
-        // );
-        // console.warn("Build id: 6vvzitvhg3i3-r519x1e752f9");
-        console.error(error);
+        console.error(error.stack);
       });
+    // this.newEditor = this.tempEditor
   },
 };
 </script>

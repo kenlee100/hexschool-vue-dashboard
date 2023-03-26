@@ -105,11 +105,13 @@
                 ></textarea>
               </div>
               <div class="mb-3">
-                <ckeditor
+                <!-- <Ckeditor :temp-editor="newTempContent.content"></Ckeditor> -->
+                <Ckeditor v-model:text="newTempContent.content"></Ckeditor>
+                <!-- <ckeditor
                   ref="ckeditorContent"
                   :editor="editor"
                   :config="editorConfig"
-                ></ckeditor>
+                ></ckeditor> -->
                 <!-- <CKEditor ref="ckeditorContent" :editor="editor" :config="editorConfig"></CKEditor> -->
               </div>
               <div class="mb-3">
@@ -155,9 +157,9 @@
 <script>
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
-// import CKEditor from "@/Ckeditor.vue";
+import Ckeditor from "../admin/Ckeditor.vue";
 // import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import "../../build/ckeditor.js";
+// import "../../build/ckeditor.js";
 
 export default {
   data() {
@@ -167,33 +169,33 @@ export default {
         tag: [],
       },
       create_at: 0,
-      editor: ClassicEditor,
-      editorConfig: {
-        toolbar: {
-          items: [
-            "undo",
-            "redo",
-            "|",
-            "heading",
-            "bold",
-            "italic",
-            "|",
-            "link",
-            "|",
-            "bulletedList",
-            "numberedList",
-            "|",
-            "|",
-            "insertTable",
-            "|",
-            "outdent",
-            "indent",
-            "|",
-            "uploadImage",
-            "blockQuote",
-          ],
-        },
-      },
+      // editor: ClassicEditor,
+      // editorConfig: {
+      //   toolbar: {
+      //     items: [
+      //       "undo",
+      //       "redo",
+      //       "|",
+      //       "heading",
+      //       "bold",
+      //       "italic",
+      //       "|",
+      //       "link",
+      //       "|",
+      //       "bulletedList",
+      //       "numberedList",
+      //       "|",
+      //       "|",
+      //       "insertTable",
+      //       "|",
+      //       "outdent",
+      //       "indent",
+      //       "|",
+      //       "uploadImage",
+      //       "blockQuote",
+      //     ],
+      //   },
+      // },
       // plugins: [Essentials],
     };
   },
@@ -234,9 +236,9 @@ export default {
     },
   },
   mixins: [modalMixin],
-  // components: {
-  //   CKEditor,
-  // },
+  components: {
+    Ckeditor,
+  },
   mounted() {
     this.$refs.modal.addEventListener("hidden.bs.modal", () => {
       // 關閉modal時將內部暫存資料清空
@@ -247,19 +249,19 @@ export default {
     this.modal = new Modal(this.$refs.modal, {
       backdrop: "static",
       keyboard: false,
-    });
-    ClassicEditor.create(this.$refs.ckeditorContent, {})
-      .then((editor) => {
-        window.editor = editor;
-      })
-      .catch((error) => {
-        console.error("Oops, something went wrong!");
-        // console.error(
-        //   "Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:"
-        // );
-        // console.warn("Build id: 6vvzitvhg3i3-r519x1e752f9");
-        console.error(error);
-      });
+    })
+    // ClassicEditor.create(this.$refs.ckeditorContent, {})
+    //   .then((editor) => {
+    //     window.editor = editor;
+    //   })
+    //   .catch((error) => {
+    //     console.error("Oops, something went wrong!");
+    //     // console.error(
+    //     //   "Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:"
+    //     // );
+    //     // console.warn("Build id: 6vvzitvhg3i3-r519x1e752f9");
+    //     console.error(error);
+    //   });
   },
 };
 </script>
