@@ -11,7 +11,7 @@ import VueAxios from "vue-axios";
 // import zhTW from "@vee-validate/i18n/dist/locale/zh_TW.json";
 
 import Loading from "vue-loading-overlay";
-// import CKEditor from "@ckeditor/ckeditor5-vue";
+import CKEditor from "@ckeditor/ckeditor5-vue";
 
 import { date, currency } from "@/utils/filters.js";
 
@@ -41,7 +41,7 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 app.use(VueAxios, axios);
-// app.use(CKEditor);
+app.use(CKEditor);
 app.component("VueLoading", Loading); // 全域元件
 
 // app.component("Form", Form);

@@ -4,6 +4,8 @@ import ClassicEditorBase from "@ckeditor/ckeditor5-editor-classic/src/classicedi
 import Autoformat from "@ckeditor/ckeditor5-autoformat/src/autoformat.js";
 import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote.js";
 import Bold from "@ckeditor/ckeditor5-basic-styles/src/bold.js";
+import CKFinderUploadAdapter from "@ckeditor/ckeditor5-adapter-ckfinder/src/uploadadapter.js";
+import CloudServices from "@ckeditor/ckeditor5-cloud-services/src/cloudservices.js";
 import Essentials from "@ckeditor/ckeditor5-essentials/src/essentials.js";
 import FontBackgroundColor from "@ckeditor/ckeditor5-font/src/fontbackgroundcolor.js";
 import FontColor from "@ckeditor/ckeditor5-font/src/fontcolor.js";
@@ -27,6 +29,8 @@ import PasteFromOffice from "@ckeditor/ckeditor5-paste-from-office/src/pastefrom
 import SourceEditing from "@ckeditor/ckeditor5-source-editing/src/sourceediting.js";
 import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough.js";
 import Style from "@ckeditor/ckeditor5-style/src/style.js";
+import SimpleUploadAdapter from "@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter";
+
 import Table from "@ckeditor/ckeditor5-table/src/table.js";
 import TableCaption from "@ckeditor/ckeditor5-table/src/tablecaption.js";
 import TableCellProperties from "@ckeditor/ckeditor5-table/src/tablecellproperties";
@@ -37,12 +41,22 @@ import TextPartLanguage from "@ckeditor/ckeditor5-language/src/textpartlanguage.
 import TextTransformation from "@ckeditor/ckeditor5-typing/src/texttransformation.js";
 import Title from "@ckeditor/ckeditor5-heading/src/title.js";
 import Underline from "@ckeditor/ckeditor5-basic-styles/src/underline.js";
+
+const { VITE__URL, VITE__PATH } = import.meta.env;
+const token = document.cookie.replace(
+  // userToken Token名稱
+  /(?:(?:^|.*;\s*)userToken\s*=\s*([^;]*).*$)|^.*$/,
+  "$1"
+);
+console.log("token", token);
 export default class ClassicEditor extends ClassicEditorBase {}
 
 ClassicEditor.builtinPlugins = [
   Autoformat,
   BlockQuote,
   Bold,
+  CKFinderUploadAdapter,
+  CloudServices,
   Essentials,
   FontBackgroundColor,
   FontColor,
@@ -66,6 +80,7 @@ ClassicEditor.builtinPlugins = [
   SourceEditing,
   Strikethrough,
   Style,
+  SimpleUploadAdapter,
   Table,
   TableCaption,
   TableCellProperties,
@@ -128,5 +143,18 @@ ClassicEditor.defaultConfig = {
       "tableCellProperties",
       "tableProperties",
     ],
+  },
+  simpleUpload: {
+    // The URL that the images are uploaded to.
+    uploadUrl: `${VITE__URL}/api/${VITE__PATH}/admin/upload/`,
+
+    // Enable the XMLHttpRequest.withCredentials property.
+    withCredentials: true,
+
+    // Headers sent along with the XMLHttpRequest to the upload server.
+    headers: {
+      "X-CSRF-TOKEN": "CSRF-Token",
+      Authorization: token,
+    },
   },
 };
