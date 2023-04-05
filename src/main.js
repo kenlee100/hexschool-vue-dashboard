@@ -15,6 +15,7 @@ import CKEditor from "@ckeditor/ckeditor5-vue";
 
 import { date, currency } from "@/utils/filters.js";
 
+import "sweetalert2/src/sweetalert2.scss";
 import "vue-loading-overlay/dist/css/index.css";
 import "bootstrap-icons/font/bootstrap-icons.scss";
 import "@/assets/styles/main.scss";
@@ -44,8 +45,8 @@ app.use(VueAxios, axios);
 app.use(CKEditor);
 app.component("VueLoading", Loading); // 全域元件
 
-app.component("Form", Form);
-app.component("Field", Field);
+app.component("VForm", Form);
+app.component("VField", Field);
 app.component("ErrorMessage", ErrorMessage);
 
 app.mount("#app");

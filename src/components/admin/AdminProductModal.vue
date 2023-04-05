@@ -2,88 +2,47 @@
   <div ref="modal" class="modal fade">
     <div class="modal-dialog modal-xl">
       <div class="modal-content border-0">
-        <div class="modal-header bg-dark text-white">
-          <h5 id="productModalLabel" class="modal-title">
-            <span v-if="isNew">新增產品</span>
-            <span v-else>編輯產品</span>
-          </h5>
-          <button type="button" class="btn-close" @click="closeModal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-sm-4">
-              <div class="image-upload-section d-flex flex-column">
-                <div class="mb-2">
-                  <div class="mb-3">
-                    <label for="imageUrl" class="form-label">主要圖片</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="請輸入主要圖片連結"
-                      v-model="newTempContent.imageUrl"
-                    />
-                    <div class="input-group">
-                      <input
-                        type="file"
-                        class="form-control"
-                        name="main-file-upload"
-                        @change="uploadFile('main-file')"
-                        ref="main-file"
-                      />
-                    </div>
-                    <img
-                      v-if="newTempContent.imageUrl"
-                      class="img-fluid"
-                      :src="newTempContent.imageUrl"
-                      alt=""
-                    />
-                    <img
-                      v-else
-                      class="img-fluid"
-                      src="https://placehold.co/640x480?text=No+Photo"
-                      alt=""
-                    />
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <button
-                    class="btn btn-outline-primary btn-sm d-block w-100"
-                    @click="createImage"
-                  >
-                    新增其他圖片欄位
-                  </button>
-                </div>
-              </div>
-              <!-- 判斷 newTempContent.imagesUrl 是一個陣列 -->
-              <div
-                class="d-flex flex-column overflow-auto"
-                v-if="Array.isArray(newTempContent.imagesUrl)"
-              >
-                <template
-                  v-for="(item, index) in newTempContent.imagesUrl"
-                  :key="item.id"
-                >
-                  <div class="py-3 border-bottom">
-                    <label class="form-label">圖片 {{ item.num }}</label>
-                    <div class="form-group">
+        <VForm
+          v-slot="{ errors }"
+          @submit="$emit('update-product', newTempContent)"
+        >
+          <div class="modal-header bg-dark text-white">
+            <h5 id="productModalLabel" class="modal-title">
+              <span v-if="isNew">新增產品</span>
+              <span v-else>編輯產品</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="closeModal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="image-upload-section d-flex flex-column">
+                  <div class="mb-2">
+                    <div class="mb-3">
+                      <label for="imageUrl" class="form-label">主要圖片</label>
                       <input
                         type="text"
                         class="form-control"
-                        :placeholder="'請輸入圖片' + item.num + '連結'"
-                        v-model="newTempContent.imagesUrl[index].imageUrl"
+                        placeholder="請輸入主要圖片連結"
+                        v-model="newTempContent.imageUrl"
                       />
-                      <input
-                        type="file"
-                        class="form-control"
-                        :name="'file-upload-' + (index + 1)"
-                        :ref="'ref-file-' + (index + 1)"
-                        @change="uploadFile('ref-file-' + (index + 1))"
-                        :data-num="index"
-                      />
+                      <div class="input-group">
+                        <input
+                          type="file"
+                          class="form-control"
+                          name="main-file-upload"
+                          @change="uploadFile('main-file')"
+                          ref="main-file"
+                        />
+                      </div>
                       <img
-                        v-if="item.imageUrl"
+                        v-if="newTempContent.imageUrl"
                         class="img-fluid"
-                        :src="item.imageUrl"
+                        :src="newTempContent.imageUrl"
                         alt=""
                       />
                       <img
@@ -93,136 +52,204 @@
                         alt=""
                       />
                     </div>
-                    <div>
-                      <button
-                        class="btn btn-outline-danger btn-sm d-block w-100"
-                        @click="deleteImage(item)"
-                      >
-                        刪除圖片 {{ item.num }}
-                      </button>
-                    </div>
                   </div>
-                </template>
-              </div>
-            </div>
-            <div class="col-sm-8">
-              <div class="mb-3">
-                <label for="title" class="form-label">標題</label>
-                <input
-                  id="title"
-                  type="text"
-                  class="form-control"
-                  placeholder="請輸入標題"
-                  v-model="newTempContent.title"
-                />
-              </div>
-              <div class="row">
-                <div class="mb-3 col-md-6">
-                  <label for="category" class="form-label">分類</label>
-                  <input
-                    id="category"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入分類"
-                    v-model="newTempContent.category"
-                  />
-                </div>
-                <div class="mb-3 col-md-6">
-                  <label for="price" class="form-label">單位</label>
-                  <input
-                    id="unit"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入單位"
-                    v-model="newTempContent.unit"
-                  />
-                </div>
-              </div>
-              <div class="row">
-                <div class="mb-3 col-md-6">
-                  <label for="origin_price" class="form-label">原價</label>
-                  <input
-                    id="origin_price"
-                    type="number"
-                    min="0"
-                    class="form-control"
-                    placeholder="請輸入原價"
-                    v-model.number="newTempContent.origin_price"
-                  />
-                </div>
-                <div class="mb-3 col-md-6">
-                  <label for="price" class="form-label">售價</label>
-                  <input
-                    id="price"
-                    type="number"
-                    min="0"
-                    class="form-control"
-                    placeholder="請輸入售價"
-                    v-model.number="newTempContent.price"
-                  />
-                </div>
-              </div>
-              <hr />
-              <div class="mb-3">
-                <label for="description" class="form-label">產品描述</label>
-                <textarea
-                  id="description"
-                  type="text"
-                  class="form-control"
-                  placeholder="請輸入產品描述"
-                  v-model="newTempContent.description"
-                >
-                </textarea>
-              </div>
-              <div class="mb-3">
-                <label for="content" class="form-label">說明內容</label>
-                <textarea
-                  id="description"
-                  type="text"
-                  class="form-control"
-                  placeholder="請輸入說明內容"
-                  v-model="newTempContent.content"
-                >
-                </textarea>
-              </div>
-              <div class="mb-3">
-                <div class="form-check form-switch">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="switch-activated"
-                    :true-value="1"
-                    :false-value="0"
-                    v-model="newTempContent.is_enabled"
-                  />
-                  <label class="form-check-label" for="switch-activated"
-                    ><span class="text-success" v-if="newTempContent.is_enabled"
-                      >已啟用</span
+                  <div class="mb-3">
+                    <button
+                      class="btn btn-outline-primary btn-sm d-block w-100"
+                      @click="createImage"
                     >
-                    <span class="text-danger" v-else>未啟用</span></label
+                      新增其他圖片欄位
+                    </button>
+                  </div>
+                </div>
+                <!-- 判斷 newTempContent.imagesUrl 是一個陣列 -->
+                <div
+                  class="d-flex flex-column overflow-auto"
+                  v-if="Array.isArray(newTempContent.imagesUrl)"
+                >
+                  <template
+                    v-for="(item, index) in newTempContent.imagesUrl"
+                    :key="item.id"
                   >
+                    <div class="py-3 border-bottom">
+                      <label class="form-label">圖片 {{ item.num }}</label>
+                      <div class="form-group">
+                        <input
+                          type="text"
+                          class="form-control"
+                          :placeholder="'請輸入圖片' + item.num + '連結'"
+                          v-model="newTempContent.imagesUrl[index].imageUrl"
+                        />
+                        <input
+                          type="file"
+                          class="form-control"
+                          :name="'file-upload-' + (index + 1)"
+                          :ref="'ref-file-' + (index + 1)"
+                          @change="uploadFile('ref-file-' + (index + 1))"
+                          :data-num="index"
+                        />
+                        <img
+                          v-if="item.imageUrl"
+                          class="img-fluid"
+                          :src="item.imageUrl"
+                          alt=""
+                        />
+                        <img
+                          v-else
+                          class="img-fluid"
+                          src="https://placehold.co/640x480?text=No+Photo"
+                          alt=""
+                        />
+                      </div>
+                      <div>
+                        <button
+                          class="btn btn-outline-danger btn-sm d-block w-100"
+                          @click="deleteImage(item)"
+                        >
+                          刪除圖片 {{ item.num }}
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div class="col-sm-8">
+                <div class="mb-3">
+                  <label for="title" class="form-label">標題</label>
+                  <VField
+                    id="title"
+                    name="標題"
+                    type="text"
+                    class="form-control"
+                    :class="{ 'border-danger': errors['標題'] }"
+                    placeholder="請輸入標題"
+                    rules="required"
+                    v-model="newTempContent.title"
+                  />
+                  <error-message name="標題" class="text-danger" />
+                </div>
+                <div class="row">
+                  <div class="mb-3 col-md-6">
+                    <label for="category" class="form-label">分類</label>
+                    <VField
+                      name="分類"
+                      id="category"
+                      type="text"
+                      class="form-control"
+                      :class="{ 'border-danger': errors['分類'] }"
+                      placeholder="請輸入分類"
+                      rules="required"
+                      v-model="newTempContent.category"
+                    />
+                    <error-message name="分類" class="text-danger" />
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="unit" class="form-label">單位</label>
+                    <VField
+                      id="unit"
+                      name="單位"
+                      type="text"
+                      class="form-control"
+                      :class="{ 'border-danger': errors['單位'] }"
+                      placeholder="請輸入單位"
+                      rules="required"
+                      v-model="newTempContent.unit"
+                    />
+                    <error-message name="單位" class="text-danger" />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-3 col-md-6">
+                    <label for="origin_price" class="form-label">原價</label>
+                    <VField
+                      id="origin_price"
+                      type="number"
+                      name="原價"
+                      min="0"
+                      class="form-control"
+                      :class="{ 'border-danger': errors['原價'] }"
+                      placeholder="請輸入原價"
+                      rules="required"
+                      v-model.number="newTempContent.origin_price"
+                    />
+                    <error-message name="原價" class="text-danger" />
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="price" class="form-label">售價</label>
+                    <VField
+                      id="price"
+                      name="售價"
+                      type="number"
+                      min="0"
+                      class="form-control"
+                      placeholder="請輸入售價"
+                      rules="required"
+                      v-model.number="newTempContent.price"
+                      :class="{ 'border-danger': errors['售價'] }"
+                    />
+                    <error-message name="原價" class="text-danger" />
+                  </div>
+                </div>
+                <hr />
+                <div class="mb-3">
+                  <label for="description" class="form-label">產品描述</label>
+                  <textarea
+                    id="description"
+                    type="text"
+                    class="form-control"
+                    placeholder="請輸入產品描述"
+                    v-model="newTempContent.description"
+                  >
+                  </textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="content" class="form-label">說明內容</label>
+                  <textarea
+                    id="description"
+                    type="text"
+                    class="form-control"
+                    placeholder="請輸入說明內容"
+                    v-model="newTempContent.content"
+                  >
+                  </textarea>
+                </div>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="switch-activated"
+                      :true-value="1"
+                      :false-value="0"
+                      v-model="newTempContent.is_enabled"
+                    />
+                    <label class="form-check-label" for="switch-activated"
+                      ><span
+                        class="text-success"
+                        v-if="newTempContent.is_enabled"
+                        >已啟用</span
+                      >
+                      <span class="text-danger" v-else>未啟用</span></label
+                    >
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click="closeModal"
-          >
-            取消
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="$emit('update-product', newTempContent)"
-          >
-            {{ isNew ? "新增產品" : "修改產品" }}
-          </button>
-        </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              @click="closeModal"
+            >
+              取消
+            </button>
+            <button type="submit" class="btn btn-primary">
+              {{ isNew ? "新增產品" : "修改產品" }}
+            </button>
+          </div>
+        </VForm>
       </div>
     </div>
   </div>
@@ -231,6 +258,8 @@
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   data() {
     return {
@@ -290,6 +319,7 @@ export default {
       });
     },
     uploadFile(refItem) {
+      useLoadingState().isLoading = true;
       const formData = new FormData();
       // 上傳主要圖片
       if (refItem === "main-file") {
@@ -298,10 +328,15 @@ export default {
         this.$http
           .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
           .then((res) => {
+            useLoadingState().isLoading = false;
             this.newTempContent.imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
-            alert(err.response.data.message);
+            useLoadingState().isLoading = false;
+            toast.fire({
+              icon: "error",
+              title: `${err.response.data.message}`,
+            });
           });
       } else {
         // 上傳其他圖片
@@ -311,10 +346,14 @@ export default {
         this.$http
           .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
           .then((res) => {
+            useLoadingState().isLoading = false;
             this.newTempContent.imagesUrl[i].imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
-            alert(err.response.data.message);
+            toast.fire({
+              icon: "error",
+              title: `${err.response.data.message}`,
+            });
           });
       }
     },

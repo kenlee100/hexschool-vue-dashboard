@@ -1,6 +1,5 @@
 <template>
   <div>
-    <VueLoading :active="isLoading"></VueLoading>
     <div class="text-end mt-4">
       <button class="btn btn-primary" type="button" @click="openModal('new')">
         建立新的優惠券
@@ -74,7 +73,7 @@
     <Pagination
       :pages="pagination"
       @change-page="getCoupons"
-      :get-data="getCoupons"
+      :get-list="getCoupons"
     />
   </div>
 </template>
@@ -83,10 +82,11 @@ const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import Pagination from "@/components/Pagination.vue";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   data() {
     return {
-      isLoading: false,
       isNew: false,
       coupons: [],
       temp: {
@@ -105,7 +105,7 @@ export default {
   },
   methods: {
     getCoupons(num = 1) {
-      this.isLoading = true;
+      useLoadingState().isLoading = true;
       this.$http
         .get(
           `${import.meta.env.VITE__URL}/api/${
@@ -115,11 +115,14 @@ export default {
         .then((res) => {
           this.coupons = res.data.coupons;
           this.pagination = res.data.pagination;
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
         })
         .catch((err) => {
-          alert(`${err.response.data.message}`);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     updateCoupon(content) {
@@ -136,23 +139,38 @@ export default {
         .then((res) => {
           this.$refs.couponModal.closeModal();
           this.getCoupons();
-          alert(res.data.message);
+          this.isNew = false;
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          alert(err.response.data.message);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     deleteItem(id) {
+      useLoadingState().isProcessing = true;
       this.$http
         .delete(`${VITE__URL}/api/${VITE__PATH}/admin/coupon/${id}`)
         .then((res) => {
           this.$refs.deleteCouponModal.closeModal();
           this.getCoupons();
-          alert(res.data.message);
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     openModal(openMethod, item) {
@@ -175,7 +193,7 @@ export default {
     },
   },
   mounted() {
-    this.isLoading = true;
+    useLoadingState().isLoading = true;
     this.getCoupons();
   },
 };

@@ -20,7 +20,9 @@
         <tbody>
           <tr v-for="item in products" :key="item.id">
             <td>{{ item.category }}</td>
-            <td>{{ item.title }}</td>
+            <td>
+              <p class="mb-0 line-clamp-2">{{ item.title }}</p>
+            </td>
             <td class="text-end">{{ item.origin_price }}</td>
             <td class="text-end">{{ item.price }}</td>
             <td>
@@ -74,19 +76,19 @@
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
-    :get-data="getProducts"
+    :get-list="getProducts"
   ></Pagination>
-  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import Pagination from "@/components/Pagination.vue";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   data() {
     return {
-      isLoading: false,
       // 初始商品資料
       products: [],
       temp: {
@@ -105,18 +107,20 @@ export default {
   methods: {
     // 取得目前頁碼商品資料
     getProducts(num = 1) {
-      this.isLoading = true;
+      useLoadingState().isLoading = true;
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/products/?page=${num}`)
         .then((res) => {
           this.products = res.data.products;
           this.pagination = res.data.pagination;
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     openModal(openMethod, item) {
@@ -136,16 +140,23 @@ export default {
       }
     },
     deleteItem(id) {
+      useLoadingState().isProcessing = true;
       this.$http
         .delete(`${VITE__URL}/api/${VITE__PATH}/admin/product/${id}`)
         .then((res) => {
           this.$refs.deleteProductModal.closeModal();
           this.getProducts();
-          alert(res.data.message);
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     updateProduct(content) {
@@ -156,22 +167,30 @@ export default {
         url = `${VITE__URL}/api/${VITE__PATH}/admin/product/${content.id}`;
         method = "put";
       }
+      useLoadingState().isProcessing = true;
       this.$http[method](url, {
         data: content,
       })
         .then((res) => {
           this.$refs.productModal.closeModal();
           this.getProducts();
-          alert(res.data.message);
+          this.isNew = false;
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // axios版本不同，err 回傳的資料層級也不同
-          alert(err.response.data.message);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
   },
   mounted() {
-    this.isLoading = true;
+    useLoadingState().isLoading = true;
     this.getProducts();
   },
 };

@@ -10,8 +10,8 @@
         <thead class="table-light">
           <tr>
             <th style="width: 200px">標題</th>
-            <th style="width: 200px">作者</th>
-            <th>描述</th>
+            <th style="width: 100px">作者</th>
+            <th style="width: 200px">描述</th>
             <th style="width: 100px">建立時間</th>
             <th style="width: 100px">是否公開</th>
             <th style="width: 120px">編輯</th>
@@ -19,9 +19,13 @@
         </thead>
         <tbody>
           <tr v-for="item in articles" :key="item.id">
-            <td>{{ item.title }}</td>
+            <td>
+              <p class="mb-0 line-clamp-2">{{ item.title }}</p>
+            </td>
             <td>{{ item.author }}</td>
-            <td>{{ item.description }}</td>
+            <td>
+              <p class="mb-0 line-clamp-2">{{ item.description }}</p>
+            </td>
             <td>{{ $filters.date(item.create_at) }}</td>
             <td>
               <!-- 要更新狀態，需取得單一商品，才取的到content內容。要打article/id api -->
@@ -73,19 +77,19 @@
   <Pagination
     :pages="pagination"
     @change-page="getArticles"
-    :get-data="getArticles"
+    :get-list="getArticles"
   ></Pagination>
-  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminArticleModalVue from "@/components/admin/AdminArticleModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import Pagination from "@/components/Pagination.vue";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   data() {
     return {
-      isLoading: false,
       modal: {},
       articles: [],
       temp: {
@@ -99,32 +103,37 @@ export default {
   },
   methods: {
     getArticles(num = 1) {
-      this.isLoading = true;
+      useLoadingState().isLoading = true;
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/articles/?page=${num}`)
         .then((res) => {
           this.articles = res.data.articles;
           this.pagination = res.data.pagination;
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
         })
         .catch((err) => {
           // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     getArticleItem(id) {
-      this.isLoading = true;
+      useLoadingState().isLoading = true;
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
         .then((res) => {
           this.openModal("edit", res.data.article);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     openModal(openMethod, item) {
@@ -148,19 +157,27 @@ export default {
       }
     },
     deleteItem(id) {
+      useLoadingState().isLoading = true;
       this.$http
         .delete(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
         .then((res) => {
           this.getArticles();
           this.$refs.deleteModal.closeModal();
-          alert(res.data.message);
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     async updateArticle(content) {
+      useLoadingState().isLoading = true;
       let url = `${VITE__URL}/api/${VITE__PATH}/admin/article`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
@@ -174,13 +191,22 @@ export default {
         .then((res) => {
           this.$refs.articleModal.closeModal();
           this.getArticles();
-          alert(res.data.message);
+          this.isNew = false;
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          alert(err.response.data.message);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     async switchUpdate(content) {
+      useLoadingState().isLoading = true;
       try {
         const articleItem = await this.$http.get(
           `${VITE__URL}/api/${VITE__PATH}/admin/article/${content.id}`
@@ -191,12 +217,16 @@ export default {
         };
         await this.updateArticle(updateContent);
       } catch (err) {
-        alert(err.response.data.message);
+        useLoadingState().isLoading = false;
+        toast.fire({
+          icon: "error",
+          title: `${err.response.data.message}`,
+        });
       }
     },
   },
   mounted() {
-    this.isLoading = true;
+    useLoadingState().isLoading = true;
     this.getArticles();
   },
   components: { AdminArticleModalVue, DelModal, Pagination },

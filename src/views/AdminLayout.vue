@@ -7,6 +7,7 @@
         <PageTitle page-title="test"></PageTitle>
         <router-view></router-view>
       </div>
+      <VueLoading :active="isLoading"></VueLoading>
     </section>
   </div>
 </template>
@@ -16,10 +17,14 @@ import { RouterView } from "vue-router";
 import Sidebar from "@/components/admin/Nav.vue";
 import HeaderBar from "@/components/admin/HeaderBar.vue";
 import PageTitle from "@/components/admin/AdminPageTitle.vue";
+import { mapState } from "pinia";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   components: { RouterView, Sidebar, HeaderBar, PageTitle },
   methods: {
     checkLogin() {
+      useLoadingState().isLoading = true;
       const token = document.cookie.replace(
         // userToken Token名稱
         /(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/,
@@ -33,30 +38,75 @@ export default {
           .catch((err) => {
             // 驗證失敗轉到登入
             this.$router.push("/login");
-            // 顯示失敗資訊
-            alert(`${err.response.data.message}`);
+            useLoadingState().isLoading = false;
+            toast.fire({
+              icon: "error",
+              title: `${err.response.data.message}`,
+            });
           });
       } else {
-        alert("請先登入");
-        this.$router.push("/login");
+        useLoadingState().isLoading = false;
+        toast
+          .fire({
+            icon: "error",
+            title: `請先登入`,
+          })
+          .then(() => {
+            this.$router.push("/login");
+          });
       }
     },
     logout() {
+      useLoadingState().isLoading = true;
       this.$http
         .post(`${VITE__URL}/logout`)
         .then((res) => {
-          alert(res.data.message);
+          useLoadingState().isLoading = false;
           document.cookie = "userToken=;expires=;";
-          this.$router.push("/login");
+          toast
+            .fire({
+              icon: "success",
+              title: `${res.data.message}`,
+            })
+            .then(() => {
+              this.$router.push("/login");
+            });
         })
         .catch((err) => {
-          alert(`${err.response.data.message}`);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
   },
-  // 原本是mounted，改為created 可避免登入驗證錯誤
+  computed: {
+    ...mapState(useLoadingState, ["isLoading"]),
+  },
   created() {
     this.checkLogin();
   },
 };
 </script>
+
+<style lang="scss">
+.swal2-container {
+  top: 84px !important;
+  z-index: 2001;
+}
+.swal2-actions {
+  width: 100%;
+  padding-top: 24px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.swal2-confirm,
+.swal2-cancel {
+  flex: 1;
+}
+
+.vl-overlay.vl-full-page {
+  z-index: 2000;
+}
+</style>
