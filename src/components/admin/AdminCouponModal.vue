@@ -2,95 +2,117 @@
   <div ref="modal" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content border-0">
-        <div class="modal-header bg-dark text-white">
-          <h5 id="productModalLabel" class="modal-title">
-            <span v-if="isNew">新增優惠卷</span>
-            <span v-else>編輯優惠卷</span>
-          </h5>
-          <button type="button" class="btn-close" @click="closeModal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="title">標題</label>
-            <input
-              type="text"
-              class="form-control"
-              id="title"
-              v-model="newTempContent.title"
-              placeholder="請輸入標題"
-            />
+        <VForm
+          v-slot="{ errors }"
+          @submit="$emit('update-coupon', newTempContent)"
+        >
+          <div class="modal-header bg-dark text-white">
+            <h5 id="productModalLabel" class="modal-title">
+              <span v-if="isNew">新增優惠卷</span>
+              <span v-else>編輯優惠卷</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="closeModal"
+            ></button>
           </div>
-          <div class="mb-3">
-            <label for="coupon_code">優惠碼</label>
-            <input
-              type="text"
-              class="form-control"
-              id="coupon_code"
-              v-model="newTempContent.code"
-              placeholder="請輸入優惠碼"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="due_date">到期日</label>
-            <input
-              type="date"
-              class="form-control"
-              id="due_date"
-              v-model="due_date"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="price">折扣百分比</label>
-            <input
-              type="number"
-              class="form-control"
-              id="price"
-              min="0"
-              max="100"
-              v-model.number="newTempContent.percent"
-              placeholder="請輸入折扣百分比"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="switch-coupon"
-                v-model="newTempContent.is_enabled"
-                :true-value="1"
-                :false-value="0"
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="title">標題</label>
+              <VField
+                type="text"
+                name="title"
+                label="標題"
+                class="form-control"
+                :class="{ 'border-danger': errors['title'] }"
+                id="title"
+                rules="required"
+                v-model="newTempContent.title"
+                placeholder="請輸入標題"
               />
-              <label class="form-check-label" for="switch-coupon"
-                ><span class="text-success" v-if="newTempContent.is_enabled"
-                  >啟用</span
+              <ErrorMessage name="title" class="text-danger" />
+            </div>
+            <div class="mb-3">
+              <label for="coupon_code">優惠碼</label>
+              <VField
+                type="text"
+                name="coupon_code"
+                label="優惠碼"
+                class="form-control"
+                :class="{ 'border-danger': errors['coupon_code'] }"
+                id="coupon_code"
+                rules="required"
+                v-model="newTempContent.code"
+                placeholder="請輸入優惠碼"
+              />
+              <ErrorMessage name="coupon_code" class="text-danger" />
+            </div>
+            <div class="mb-3">
+              <label for="due_date">到期日</label>
+              <input
+                type="date"
+                class="form-control"
+                id="due_date"
+                :min="due_date"
+                v-model="due_date"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="percent">折扣百分比</label>
+              <VField
+                type="number"
+                name="percent"
+                label="折扣百分比"
+                class="form-control"
+                :class="{ 'border-danger': errors['percent'] }"
+                id="price"
+                min="0"
+                max="100"
+                rules="required"
+                v-model.number="newTempContent.percent"
+                placeholder="請輸入折扣百分比"
+              />
+              <ErrorMessage name="percent" class="text-danger" />
+            </div>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="switch-coupon"
+                  v-model="newTempContent.is_enabled"
+                  :true-value="1"
+                  :false-value="0"
+                />
+                <label class="form-check-label" for="switch-coupon"
+                  ><span class="text-success" v-if="newTempContent.is_enabled"
+                    >啟用</span
+                  >
+                  <span class="text-danger" v-else>未啟用</span></label
                 >
-                <span class="text-danger" v-else>未啟用</span></label
-              >
+              </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click="closeModal"
-          >
-            取消
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="$emit('update-coupon', newTempContent)"
-          >
-            {{ isNew ? "新增優惠卷" : "更新優惠券" }}
-          </button>
-        </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              @click="closeModal"
+            >
+              取消
+            </button>
+            <button type="submit" class="btn btn-primary">
+              {{ isNew ? "新增優惠卷" : "更新優惠券" }}
+            </button>
+          </div>
+        </VForm>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
