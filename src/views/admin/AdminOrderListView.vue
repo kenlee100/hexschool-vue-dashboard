@@ -96,13 +96,13 @@
     :pages="pagination"
     @change-page="getOrder"
     :get-list="getOrder"
-  ></Pagination>
+  />
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
 export default {

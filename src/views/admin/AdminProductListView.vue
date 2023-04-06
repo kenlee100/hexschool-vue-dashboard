@@ -77,13 +77,13 @@
     :pages="pagination"
     @change-page="getProducts"
     :get-list="getProducts"
-  ></Pagination>
+  />
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
 export default {

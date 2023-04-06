@@ -204,14 +204,11 @@
                 </div>
                 <div class="mb-3">
                   <label for="content" class="form-label">說明內容</label>
-                  <textarea
-                    id="description"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入說明內容"
+                  <ckeditor
+                    :editor="editor"
+                    :config="editorConfig"
                     v-model="newTempContent.content"
-                  >
-                  </textarea>
+                  ></ckeditor>
                 </div>
                 <div class="mb-3">
                   <div class="form-check form-switch">
@@ -260,6 +257,7 @@ import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 export default {
   data() {
     return {
@@ -269,7 +267,7 @@ export default {
       },
       editor: ClassicEditor,
       editorConfig: {
-        toolbar: ["heading", "typing", "bold", "italic", "|", "link"],
+        toolbar: ["heading", "bold", "italic", "|", "link"],
       },
     };
   },

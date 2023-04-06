@@ -81,7 +81,7 @@
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
 export default {
