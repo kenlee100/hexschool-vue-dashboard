@@ -160,6 +160,7 @@ export default {
         });
     },
     updateProduct(content) {
+      useLoadingState().isProcessing = true;
       let url = `${VITE__URL}/api/${VITE__PATH}/admin/product`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
@@ -167,7 +168,7 @@ export default {
         url = `${VITE__URL}/api/${VITE__PATH}/admin/product/${content.id}`;
         method = "put";
       }
-      useLoadingState().isProcessing = true;
+
       this.$http[method](url, {
         data: content,
       })

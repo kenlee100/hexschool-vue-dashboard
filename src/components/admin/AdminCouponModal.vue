@@ -22,29 +22,31 @@
               <label for="title">標題</label>
               <VField
                 type="text"
-                name="標題"
+                name="title"
+                label="標題"
                 class="form-control"
-                :class="{ 'border-danger': errors['標題'] }"
+                :class="{ 'border-danger': errors['title'] }"
                 id="title"
                 rules="required"
                 v-model="newTempContent.title"
                 placeholder="請輸入標題"
               />
-              <error-message name="標題" class="text-danger" />
+              <ErrorMessage name="title" class="text-danger" />
             </div>
             <div class="mb-3">
               <label for="coupon_code">優惠碼</label>
               <VField
                 type="text"
-                name="優惠碼"
+                name="coupon_code"
+                label="優惠碼"
                 class="form-control"
-                :class="{ 'border-danger': errors['優惠碼'] }"
+                :class="{ 'border-danger': errors['coupon_code'] }"
                 id="coupon_code"
                 rules="required"
                 v-model="newTempContent.code"
                 placeholder="請輸入優惠碼"
               />
-              <error-message name="優惠碼" class="text-danger" />
+              <ErrorMessage name="coupon_code" class="text-danger" />
             </div>
             <div class="mb-3">
               <label for="due_date">到期日</label>
@@ -57,12 +59,13 @@
               />
             </div>
             <div class="mb-3">
-              <label for="price">折扣百分比</label>
+              <label for="percent">折扣百分比</label>
               <VField
                 type="number"
-                name="折扣百分比"
+                name="percent"
+                label="折扣百分比"
                 class="form-control"
-                :class="{ 'border-danger': errors['折扣百分比'] }"
+                :class="{ 'border-danger': errors['percent'] }"
                 id="price"
                 min="0"
                 max="100"
@@ -70,22 +73,9 @@
                 v-model.number="newTempContent.percent"
                 placeholder="請輸入折扣百分比"
               />
-              <error-message name="折扣百分比" class="text-danger" />
+              <ErrorMessage name="percent" class="text-danger" />
             </div>
             <div class="mb-3">
-              <!-- <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  :true-value="1"
-                  :false-value="0"
-                  v-model="newTempContent.is_enabled"
-                  id="is_enabled"
-                />
-                <label class="form-check-label" for="is_enabled">
-                  是否啟用
-                </label>
-              </div> -->
               <div class="form-check form-switch">
                 <input
                   class="form-check-input"
@@ -122,6 +112,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";

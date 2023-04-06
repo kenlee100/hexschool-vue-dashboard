@@ -24,15 +24,16 @@
                   <label for="title" class="form-label">標題</label>
                   <VField
                     type="text"
-                    name="標題"
+                    name="title"
+                    label="標題"
                     class="form-control"
-                    :class="{ 'border-danger': errors['標題'] }"
+                    :class="{ 'is-invalid': errors['title'] }"
                     id="title"
                     rules="required"
                     v-model="newTempContent.title"
                     placeholder="請輸入標題"
                   />
-                  <error-message name="標題" class="text-danger" />
+                  <ErrorMessage name="title" class="text-danger" />
                 </div>
                 <div class="mb-3">
                   <label for="image" class="form-label">輸入圖片網址</label>
@@ -53,15 +54,16 @@
                   <label for="author" class="form-label">作者</label>
                   <VField
                     type="text"
-                    name="作者"
+                    name="author"
+                    label="作者"
                     class="form-control"
-                    :class="{ 'border-danger': errors['作者'] }"
+                    :class="{ 'is-invalid': errors['author'] }"
                     id="author"
                     rules="required"
                     v-model="newTempContent.author"
                     placeholder="請輸入標題"
                   />
-                  <error-message name="作者" class="text-danger" />
+                  <ErrorMessage name="author" class="text-danger" />
                 </div>
                 <div class="mb-3">
                   <label for="create_at">文章建立日期</label>

@@ -118,44 +118,47 @@
                   <label for="title" class="form-label">標題</label>
                   <VField
                     id="title"
-                    name="標題"
+                    name="title"
+                    label="標題"
                     type="text"
                     class="form-control"
-                    :class="{ 'border-danger': errors['標題'] }"
+                    :class="{ 'is-invalid': errors['title'] }"
                     placeholder="請輸入標題"
                     rules="required"
                     v-model="newTempContent.title"
                   />
-                  <error-message name="標題" class="text-danger" />
+                  <ErrorMessage name="title" class="text-danger" />
                 </div>
                 <div class="row">
                   <div class="mb-3 col-md-6">
                     <label for="category" class="form-label">分類</label>
                     <VField
-                      name="分類"
+                      name="category"
+                      label="分類"
                       id="category"
                       type="text"
                       class="form-control"
-                      :class="{ 'border-danger': errors['分類'] }"
+                      :class="{ 'is-invalid': errors['category'] }"
                       placeholder="請輸入分類"
                       rules="required"
                       v-model="newTempContent.category"
                     />
-                    <error-message name="分類" class="text-danger" />
+                    <ErrorMessage name="category" class="text-danger" />
                   </div>
                   <div class="mb-3 col-md-6">
                     <label for="unit" class="form-label">單位</label>
                     <VField
                       id="unit"
-                      name="單位"
+                      label="單位"
+                      name="unit"
                       type="text"
                       class="form-control"
-                      :class="{ 'border-danger': errors['單位'] }"
+                      :class="{ 'is-invalid': errors['unit'] }"
                       placeholder="請輸入單位"
                       rules="required"
                       v-model="newTempContent.unit"
                     />
-                    <error-message name="單位" class="text-danger" />
+                    <ErrorMessage name="unit" class="text-danger" />
                   </div>
                 </div>
                 <div class="row">
@@ -164,30 +167,32 @@
                     <VField
                       id="origin_price"
                       type="number"
-                      name="原價"
+                      name="origin_price"
+                      label="原價"
                       min="0"
                       class="form-control"
-                      :class="{ 'border-danger': errors['原價'] }"
+                      :class="{ 'is-invalid': errors['origin_price'] }"
                       placeholder="請輸入原價"
                       rules="required"
                       v-model.number="newTempContent.origin_price"
                     />
-                    <error-message name="原價" class="text-danger" />
+                    <ErrorMessage name="origin_price" class="text-danger" />
                   </div>
                   <div class="mb-3 col-md-6">
                     <label for="price" class="form-label">售價</label>
                     <VField
                       id="price"
-                      name="售價"
+                      name="price"
+                      label="售價"
                       type="number"
                       min="0"
                       class="form-control"
                       placeholder="請輸入售價"
                       rules="required"
                       v-model.number="newTempContent.price"
-                      :class="{ 'border-danger': errors['售價'] }"
+                      :class="{ 'is-invalid': errors['price'] }"
                     />
-                    <error-message name="原價" class="text-danger" />
+                    <ErrorMessage name="price" class="text-danger" />
                   </div>
                 </div>
                 <hr />
