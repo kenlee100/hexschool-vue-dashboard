@@ -50,6 +50,7 @@
 </template>
 <script>
 const { VITE__URL } = import.meta.env;
+import toast from "@/utils/toast";
 export default {
   data() {
     return {
@@ -69,7 +70,10 @@ export default {
           this.$router.push("/admin");
         })
         .catch((err) => {
-          alert(err.data.message);
+          toast.fire({
+            icon: "error",
+            title: `${err.data.message}`,
+          });
         });
     },
   },

@@ -7,7 +7,7 @@
             class="page-link"
             href="#"
             aria-label="Previous"
-            @click.prevent="getDatas(pages.current_page - 1)"
+            @click.prevent="getList(pages.current_page - 1)"
           >
             <span aria-hidden="true">&laquo;</span>
           </a>
@@ -37,7 +37,7 @@
             class="page-link"
             href="#"
             aria-label="Next"
-            @click.prevent="getDatas(pages.current_page + 1)"
+            @click.prevent="getList(pages.current_page + 1)"
           >
             <span aria-hidden="true">&raquo;</span>
           </a>
@@ -54,11 +54,11 @@ export default {
       default() {},
     },
     //
-    getDatas: {
+    getList: {
       type: Function,
       default: () => {},
     },
   },
-  // emits: ["change-page"],
+  emits: ["change-page"],
 };
 </script>

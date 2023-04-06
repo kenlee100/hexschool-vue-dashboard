@@ -1,4 +1,11 @@
-<template>Welcome</template>
 <script>
-export default {};
+import { useLoadingState } from "@/stores/common.js";
+export default {
+  mounted() {
+    useLoadingState().isLoading = true;
+    setTimeout(() => {
+      useLoadingState().isLoading = false;
+    }, 300);
+  },
+};
 </script>

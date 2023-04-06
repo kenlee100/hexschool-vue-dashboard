@@ -95,19 +95,19 @@
   <PaginationComponent
     :pages="pagination"
     @change-page="getOrder"
-    :get-data="getOrder"
-  ></PaginationComponent>
-  <VueLoading v-model:active="isLoading"></VueLoading>
+    :get-list="getOrder"
+  ></Pagination>
 </template>
 <script>
 const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
+import Pagination from "@/components/Pagination.vue";
+import toast from "@/utils/toast";
+import { useLoadingState } from "@/stores/common.js";
 export default {
   data() {
     return {
-      isLoading: false,
       // 初始商品資料
       orders: [],
       temp: {},
@@ -123,31 +123,39 @@ export default {
   methods: {
     // 取得目前頁碼商品資料
     getOrder(num = 1) {
-      this.isLoading = true;
+      useLoadingState().isLoading = true;
       this.$http
         .get(`${VITE__URL}/api/${VITE__PATH}/admin/orders/?page=${num}`)
         .then((res) => {
           this.orders = res.data.orders;
           this.pagination = res.data.pagination;
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
-          this.isLoading = false;
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     deleteItem(id) {
+      useLoadingState().isProcessing = true;
       this.$http
         .delete(`${VITE__URL}/api/${VITE__PATH}/admin/order/${id}`)
         .then((res) => {
           this.$refs.deleteOrderModal.closeModal();
           this.getOrder();
-          alert(res.data.message);
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // 顯示失敗資訊
-          alert(`${err.response.data.message}`);
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
     openModal(openMethod, item) {
@@ -169,16 +177,22 @@ export default {
         .then((res) => {
           this.getOrder();
           this.$refs.orderModal.closeModal();
-          alert(res.data.message);
+          toast.fire({
+            icon: "success",
+            title: res.data.message,
+          });
         })
         .catch((err) => {
-          // axios版本不同，err 回傳的資料層級也不同
-          alert(err.response.data.message);
+          useLoadingState().isLoading = false;
+          toast.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
         });
     },
   },
   mounted() {
-    this.isLoading = true;
+    useLoadingState().isLoading = true;
     this.getOrder();
   },
 };
