@@ -5,7 +5,7 @@
       <HeaderBar :logout="logout" />
       <div class="container-fluid">
         <PageTitle page-title="test"></PageTitle>
-        <router-view></router-view>
+        <RouterView />
       </div>
       <VueLoading :active="isLoading"></VueLoading>
     </section>
