@@ -1,4 +1,5 @@
 # hexschool-vue-dashboard
+## [Demo](https://kenlee100.github.io/hexschool-vue-dashboard)
 
 This template should help get you started developing with Vue 3 in Vite.
 

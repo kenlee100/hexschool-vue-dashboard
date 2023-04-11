@@ -45,6 +45,7 @@ import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough.js
 import Subscript from "@ckeditor/ckeditor5-basic-styles/src/subscript";
 import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
 import Style from "@ckeditor/ckeditor5-style/src/style.js";
+import SimpleUploadAdapter from "@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter";
 import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters.js";
 import SpecialCharactersArrows from "@ckeditor/ckeditor5-special-characters/src/specialcharactersarrows.js";
 import SpecialCharactersCurrency from "@ckeditor/ckeditor5-special-characters/src/specialcharacterscurrency.js";
@@ -60,8 +61,16 @@ import TableProperties from "@ckeditor/ckeditor5-table/src/tableproperties";
 import TableToolbar from "@ckeditor/ckeditor5-table/src/tabletoolbar.js";
 import TextPartLanguage from "@ckeditor/ckeditor5-language/src/textpartlanguage.js";
 import TextTransformation from "@ckeditor/ckeditor5-typing/src/texttransformation.js";
-import Title from "@ckeditor/ckeditor5-heading/src/title.js";
+// import Title from "@ckeditor/ckeditor5-heading/src/title.js";
 import Underline from "@ckeditor/ckeditor5-basic-styles/src/underline.js";
+
+// 上傳圖片待修正
+const { VITE__URL, VITE__PATH } = import.meta.env;
+const token = document.cookie.replace(
+  // userToken Token名稱
+  /(?:(?:^|.*;\s*)userToken\s*=\s*([^;]*).*$)|^.*$/,
+  "$1"
+);
 export default {
   data() {
     return {
@@ -103,6 +112,7 @@ export default {
           Subscript,
           Superscript,
           Style,
+          SimpleUploadAdapter,
           Table,
           TableCaption,
           TableCellProperties,
@@ -205,6 +215,19 @@ export default {
           //   colors: customColors,
           columns: 10,
         },
+        simpleUpload: {
+          // The URL that the images are uploaded to.
+          uploadUrl: `${VITE__URL}/api/${VITE__PATH}/admin/upload/`,
+
+          // Enable the XMLHttpRequest.withCredentials property.
+          withCredentials: true,
+
+          // Headers sent along with the XMLHttpRequest to the upload server.
+          headers: {
+            "X-CSRF-TOKEN": "CSRF-Token",
+            Authorization: token,
+          },
+        },
       },
     };
   },
@@ -215,15 +238,14 @@ export default {
     },
   },
   watch: {
-    editorData(newVal) {
-    //   console.log("newVal", newVal);
+    editorData() {
+      //   console.log("newVal", newVal);
       this.tempData = this.editorData;
     },
   },
 
   mounted() {
     this.tempData = this.editorData;
-    console.dir(this.editor);
   },
 };
 </script>
