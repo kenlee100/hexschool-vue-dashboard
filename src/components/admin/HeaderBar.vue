@@ -19,7 +19,7 @@
   </header>
 </template>
 <script>
-// import * as bootstrap from "bootstrap";
+import * as bootstrap from "bootstrap";
 export default {
   props: {
     logout: {

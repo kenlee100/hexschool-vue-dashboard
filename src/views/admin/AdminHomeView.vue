@@ -1,3 +1,5 @@
+<template></template>
+
 <script>
 import { useLoadingState } from "@/stores/common.js";
 export default {
