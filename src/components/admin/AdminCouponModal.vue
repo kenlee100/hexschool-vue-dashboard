@@ -69,7 +69,7 @@
                 id="price"
                 min="0"
                 max="100"
-                rules="required"
+                rules="required|max_value:100"
                 v-model.number="newTempContent.percent"
                 placeholder="請輸入折扣百分比"
               />
