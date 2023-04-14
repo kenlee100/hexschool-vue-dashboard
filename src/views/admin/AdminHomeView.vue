@@ -1,4 +1,4 @@
-<template></template>
+<template>Welcome</template>
 
 <script>
 import { useLoadingState } from "@/stores/common.js";
