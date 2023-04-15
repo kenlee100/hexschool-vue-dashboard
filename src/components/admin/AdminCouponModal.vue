@@ -69,7 +69,11 @@
                 id="price"
                 min="0"
                 max="100"
-                rules="required|max_value:100"
+                :rules="{
+                  required: true,
+                  max_value: 100,
+                  regex: /^(0|[1-9][0-9]?|100)$/,
+                }"
                 v-model.number="newTempContent.percent"
                 placeholder="請輸入折扣百分比"
               />
