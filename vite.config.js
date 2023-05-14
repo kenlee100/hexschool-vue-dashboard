@@ -7,7 +7,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/hexschool-vue-dashboard",
+  base:
+    process.env.NODE_ENV === "production" ? "/hexschool-vue-dashboard" : "/",
   plugins: [
     vue(),
     ckeditor5({ theme: require.resolve("@ckeditor/ckeditor5-theme-lark") }),

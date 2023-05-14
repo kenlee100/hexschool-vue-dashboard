@@ -37,7 +37,7 @@ export default {
           .then(() => {})
           .catch((err) => {
             // 驗證失敗轉到登入
-            this.$router.push("/login");
+            this.$router.push("/");
             useLoadingState().isLoading = false;
             toast.fire({
               icon: "error",
@@ -52,7 +52,7 @@ export default {
             title: `請先登入`,
           })
           .then(() => {
-            this.$router.push("/login");
+            this.$router.push("/");
           });
       }
     },
@@ -60,17 +60,10 @@ export default {
       useLoadingState().isLoading = true;
       this.$http
         .post(`${VITE__URL}/logout`)
-        .then((res) => {
+        .then(() => {
           useLoadingState().isLoading = false;
           document.cookie = "userToken=;expires=;";
-          toast
-            .fire({
-              icon: "success",
-              title: `${res.data.message}`,
-            })
-            .then(() => {
-              this.$router.push("/login");
-            });
+          this.$router.push("/");
         })
         .catch((err) => {
           useLoadingState().isLoading = false;
