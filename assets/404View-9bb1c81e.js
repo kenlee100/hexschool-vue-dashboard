@@ -1,0 +1,1 @@
+import{_ as o,o as s,c as t,a as e}from"./index-a82b7bb5.js";const c={},n={class:"container"},_=e("h1",null,"404",-1),a=e("p",null,"找不到頁面",-1),r=[_,a];function i(d,l){return s(),t("div",n,r)}const h=o(c,[["render",i]]);export{h as default};

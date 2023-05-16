@@ -1,1 +1,0 @@
-import{u as e}from"./common-f565fb83.js";import{_ as o}from"./index-4cba5261.js";const t={mounted(){e().isLoading=!0,setTimeout(()=>{e().isLoading=!1},300)}};function s(n,r,a,i,c,m){return"Welcome"}const _=o(t,[["render",s]]);export{_ as default};
