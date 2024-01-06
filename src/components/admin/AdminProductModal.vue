@@ -258,7 +258,7 @@
   </div>
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
+const { VITE_URL, VITE_PATH } = import.meta.env;
 import modalMixin from "@/mixins/modalMixin.js";
 import Modal from "bootstrap/js/dist/modal";
 import toast from "@/utils/toast";
@@ -334,7 +334,7 @@ export default {
         const refFiles = this.$refs[refItem];
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
+          .post(`${VITE_URL}/api/${VITE_PATH}/admin/upload/`, formData)
           .then((res) => {
             useLoadingState().isLoading = false;
             this.newTempContent.imageUrl = res.data.imageUrl;
@@ -352,7 +352,7 @@ export default {
         const i = parseInt(refFiles.dataset.num);
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE__URL}/api/${VITE__PATH}/admin/upload/`, formData)
+          .post(`${VITE_URL}/api/${VITE_PATH}/admin/upload/`, formData)
           .then((res) => {
             useLoadingState().isLoading = false;
             this.newTempContent.imagesUrl[i].imageUrl = res.data.imageUrl;

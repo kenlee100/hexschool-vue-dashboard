@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
+const { VITE_URL, VITE_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {
@@ -104,7 +104,7 @@ export default {
       // 取得單筆商品資訊;
       if (this.id) {
         this.$http
-          .get(`${VITE__URL}/api/${VITE__PATH}/product/${this.id}`)
+          .get(`${VITE_URL}/api/${VITE_PATH}/product/${this.id}`)
           .then((res) => {
             this.tempContent = res.data.product;
             this.modal.show();

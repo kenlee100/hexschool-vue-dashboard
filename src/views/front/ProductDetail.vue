@@ -46,7 +46,7 @@
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
+const { VITE_URL, VITE_PATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -58,7 +58,7 @@ export default {
   methods: {
     getProductItem(id) {
       this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/product/${id}`)
+        .get(`${VITE_URL}/api/${VITE_PATH}/product/${id}`)
         .then((res) => {
           this.productItem = res.data.product;
           this.isLoading = false;
@@ -70,7 +70,7 @@ export default {
     },
     addCart(content, qty = 1) {
       this.$http
-        .post(`${VITE__URL}/api/${VITE__PATH}/cart`, {
+        .post(`${VITE_URL}/api/${VITE_PATH}/cart`, {
           data: {
             product_id: content.id,
             qty,

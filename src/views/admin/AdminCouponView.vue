@@ -78,12 +78,12 @@
   </div>
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminCouponModal from "@/components/admin/AdminCouponModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
+import { getCoupons, deleteItem, updateCoupon } from "@/apis/coupon";
 export default {
   data() {
     return {
@@ -104,74 +104,44 @@ export default {
     PaginationComponent,
   },
   methods: {
-    getCoupons(num = 1) {
+    async getCoupons(num = 1) {
       useLoadingState().isLoading = true;
-      this.$http
-        .get(
-          `${import.meta.env.VITE__URL}/api/${
-            import.meta.env.VITE__PATH
-          }/admin/coupons?page=${num}`
-        )
-        .then((res) => {
-          this.coupons = res.data.coupons;
-          this.pagination = res.data.pagination;
-          useLoadingState().isLoading = false;
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await getCoupons(num);
+      this.coupons = res.coupons;
+      this.pagination = res.pagination;
+      useLoadingState().isLoading = false;
     },
-    updateCoupon(content) {
-      let url = `${VITE__URL}/api/${VITE__PATH}/admin/coupon`;
+    async updateCoupon(content) {
+      useLoadingState().isLoading = true;
+      let param = "";
       let method = "post";
-      // // // 判斷 isNew 是否為 新增
+      // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE__URL}/api/${VITE__PATH}/admin/coupon/${content.id}`;
+        param += content.id;
         method = "put";
       }
-      this.$http[method](url, {
+      console.log("update", content);
+      const res = await updateCoupon(method, param, {
         data: content,
-      })
-        .then((res) => {
-          this.$refs.couponModal.closeModal();
-          this.getCoupons();
-          this.isNew = false;
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      });
+      this.$refs.couponModal.closeModal();
+      await this.getCoupons();
+      this.isNew = false;
+
+      await toast.fire({
+        icon: "success",
+        title: res.message,
+      });
     },
-    deleteItem(id) {
+    async deleteItem(id) {
       useLoadingState().isProcessing = true;
-      this.$http
-        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/coupon/${id}`)
-        .then((res) => {
-          this.$refs.deleteCouponModal.closeModal();
-          this.getCoupons();
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await deleteItem(id);
+      this.$refs.deleteCouponModal.closeModal();
+      await this.getCoupons();
+      await toast.fire({
+        icon: "success",
+        title: res.message,
+      });
     },
     openModal(openMethod, item) {
       if (openMethod === "new") {
@@ -179,6 +149,10 @@ export default {
         this.$refs.couponModal.openModal();
 
         this.temp = {
+          title: "",
+          is_enabled: 0,
+          percent: 100,
+          code: "",
           due_date: new Date().getTime() / 1000,
         };
       } else if (openMethod === "edit") {

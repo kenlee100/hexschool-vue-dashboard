@@ -99,12 +99,13 @@
   />
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
+// const { VITE_URL, VITE_PATH } = import.meta.env;
 import AdminOrderModal from "@/components/admin/AdminOrderModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
+import { getOrder, deleteOrderItem } from "@/apis/order";
 export default {
   data() {
     return {
@@ -122,41 +123,38 @@ export default {
   },
   methods: {
     // 取得目前頁碼商品資料
-    getOrder(num = 1) {
+    async getOrder(num = 1) {
       useLoadingState().isLoading = true;
-      this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/admin/orders/?page=${num}`)
-        .then((res) => {
-          this.orders = res.data.orders;
-          this.pagination = res.data.pagination;
-          useLoadingState().isLoading = false;
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
+      try {
+        const res = await getOrder(num);
+        this.orders = res.orders;
+        this.pagination = res.pagination;
+        useLoadingState().isLoading = false;
+      } catch (err) {
+        console.log("getOrder", err);
+        useLoadingState().isLoading = false;
+        toast.fire({
+          icon: "error",
+          title: `${err.respons.data.message}`,
         });
+      }
     },
-    deleteItem(id) {
-      useLoadingState().isProcessing = true;
-      this.$http
-        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/order/${id}`)
-        .then((res) => {
-          this.$refs.deleteOrderModal.closeModal();
-          this.getOrder();
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
+    async deleteItem(id) {
+      try {
+        const res = await deleteOrderItem(id);
+        this.$refs.deleteOrderModal.closeModal();
+        await this.getOrder();
+        toast.fire({
+          icon: "success",
+          title: res.message,
         });
+      } catch (err) {
+        console.log("errrrrrrrrr", err);
+        toast.fire({
+          icon: "error",
+          title: `${err.response.data.message}`,
+        });
+      }
     },
     openModal(openMethod, item) {
       if (openMethod === "view") {
@@ -168,27 +166,27 @@ export default {
       }
     },
     updatePaid(content) {
-      this.$http
-        .put(`${VITE__URL}/api/${VITE__PATH}/admin/order/${content.id}`, {
-          data: {
-            is_paid: content.is_paid,
-          },
-        })
-        .then((res) => {
-          this.getOrder();
-          this.$refs.orderModal.closeModal();
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      // this.$http
+      //   .put(`${VITE_URL}/api/${VITE_PATH}/admin/order/${content.id}`, {
+      //     data: {
+      //       is_paid: content.is_paid,
+      //     },
+      //   })
+      //   .then((res) => {
+      //     this.getOrder();
+      //     this.$refs.orderModal.closeModal();
+      //     toast.fire({
+      //       icon: "success",
+      //       title: res.data.message,
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     useLoadingState().isLoading = false;
+      //     toast.fire({
+      //       icon: "error",
+      //       title: `${err.response.data.message}`,
+      //     });
+      //   });
     },
   },
   mounted() {

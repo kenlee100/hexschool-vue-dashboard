@@ -131,7 +131,7 @@ export default {
   props: {
     tempContent: {
       type: Object,
-      default() {},
+      default: () => ({}),
     },
     // 接收外層isNew，判斷modal標題
     isNew: {

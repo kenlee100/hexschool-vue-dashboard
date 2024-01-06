@@ -191,7 +191,7 @@
   <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
+const { VITE_URL, VITE_PATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -223,7 +223,7 @@ export default {
     // 取得購物車
     getCartList() {
       this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/cart`)
+        .get(`${VITE_URL}/api/${VITE_PATH}/cart`)
         .then((res) => {
           this.cart = res.data.data;
           this.isLoading = false;
@@ -239,7 +239,7 @@ export default {
       this.loadingStatus.loadingItem = content.id;
       try {
         const res = await this.$http.delete(
-          `${VITE__URL}/api/${VITE__PATH}/cart/${content.id}`
+          `${VITE_URL}/api/${VITE_PATH}/cart/${content.id}`
         );
         // 將讀取狀態清空
         this.loadingStatus.loadingItem = "";
@@ -260,7 +260,7 @@ export default {
       if (dialog) {
         try {
           const res = await this.$http.delete(
-            `${VITE__URL}/api/${VITE__PATH}/carts`
+            `${VITE_URL}/api/${VITE_PATH}/carts`
           );
           await this.getCartList();
           const { message } = res.data;
@@ -278,7 +278,7 @@ export default {
       this.loadingStatus.loadingItem = content.id;
       try {
         await this.$http.put(
-          `${VITE__URL}/api/${VITE__PATH}/cart/${content.id}`,
+          `${VITE_URL}/api/${VITE_PATH}/cart/${content.id}`,
           {
             data: {
               product_id: content.product_id,
@@ -307,7 +307,7 @@ export default {
       const order = this.form;
       try {
         const res = await this.$http.post(
-          `${VITE__URL}/api/${VITE__PATH}/order`,
+          `${VITE_URL}/api/${VITE_PATH}/order`,
           {
             data: order,
           }

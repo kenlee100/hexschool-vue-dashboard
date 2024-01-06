@@ -21,7 +21,7 @@
   </div>
 </template>
 <script>
-// const { VITE__URL } = import.meta.env;
+// const { VITE_URL } = import.meta.env;
 import adminNavListMenu from "../../stores/NavList.js";
 import { mapState } from "pinia";
 export default {

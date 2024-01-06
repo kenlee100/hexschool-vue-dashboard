@@ -12,67 +12,36 @@
   </div>
 </template>
 <script>
-const { VITE__URL } = import.meta.env;
 import { RouterView } from "vue-router";
 import NavBar from "@/components/admin/NavBar.vue";
 import HeaderBar from "@/components/admin/HeaderBar.vue";
 import PageTitle from "@/components/admin/AdminPageTitle.vue";
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import toast from "@/utils/toast";
-import { useLoadingState } from "@/stores/common.js";
+
+import { useLoadingState } from "@/stores/common";
+import { userStore } from "@/stores/user";
 export default {
   components: { RouterView, NavBar, HeaderBar, PageTitle },
   methods: {
-    checkLogin() {
-      useLoadingState().isLoading = true;
-      const token = document.cookie.replace(
-        // userToken Token名稱
-        /(?:(?:^|.*;\s*)userToken\s*=\s*([^;]*).*$)|^.*$/,
-        "$1"
-      );
-      if (token) {
-        this.$http.defaults.headers.common.Authorization = token;
-        this.$http
-          .post(`${VITE__URL}/api/user/check`)
-          .then(() => {})
-          .catch((err) => {
-            // 驗證失敗轉到登入
-            this.$router.push("/");
-            useLoadingState().isLoading = false;
-            toast.fire({
-              icon: "error",
-              title: `${err.response.data.message}`,
-            });
-          });
-      } else {
-        useLoadingState().isLoading = false;
-        toast
-          .fire({
-            icon: "error",
-            title: `請先登入`,
-          })
-          .then(() => {
-            this.$router.push("/");
-          });
+    // async loginCheck() {
+    //   await this.checkLogin();
+    //   // useLoadingState().isLoading = false;
+    // },
+    async logout() {
+      try {
+        await this.logout();
+        // useLoadingState().isLoading = false;
+      } catch (err) {
+        // console.log('logout err',err);
+        // useLoadingState().isLoading = false;
+        toast.fire({
+          icon: "error",
+          title: `${err.response.data.message}`,
+        });
       }
     },
-    logout() {
-      useLoadingState().isLoading = true;
-      this.$http
-        .post(`${VITE__URL}/logout`)
-        .then(() => {
-          useLoadingState().isLoading = false;
-          document.cookie = "userToken=;expires=;";
-          this.$router.push("/");
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
-    },
+    ...mapActions(userStore, ["logout", "checkLogin"]),
   },
   computed: {
     ...mapState(useLoadingState, ["isLoading"]),

@@ -80,12 +80,12 @@
   />
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import DelModal from "@/components/DelModal.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
 import { useLoadingState } from "@/stores/common.js";
+import { getProducts, deleteItem, updateProduct } from "@/apis/product";
 export default {
   data() {
     return {
@@ -106,22 +106,12 @@ export default {
   },
   methods: {
     // 取得目前頁碼商品資料
-    getProducts(num = 1) {
+    async getProducts(num = 1) {
       useLoadingState().isLoading = true;
-      this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/admin/products/?page=${num}`)
-        .then((res) => {
-          this.products = res.data.products;
-          this.pagination = res.data.pagination;
-          useLoadingState().isLoading = false;
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await getProducts(num);
+      this.products = res.products;
+      this.pagination = res.pagination;
+      useLoadingState().isLoading = false;
     },
     openModal(openMethod, item) {
       if (openMethod === "new") {
@@ -139,60 +129,39 @@ export default {
         this.$refs.deleteProductModal.openModal();
       }
     },
-    deleteItem(id) {
+    async deleteItem(id) {
+      const res = await deleteItem(id);
       useLoadingState().isProcessing = true;
-      this.$http
-        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/product/${id}`)
-        .then((res) => {
-          this.$refs.deleteProductModal.closeModal();
-          this.getProducts();
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      this.$refs.deleteProductModal.closeModal();
+      await this.getProducts();
+      await toast.fire({
+        icon: "success",
+        title: res.message,
+      });
     },
-    updateProduct(content) {
+    async updateProduct(content) {
       useLoadingState().isProcessing = true;
-      let url = `${VITE__URL}/api/${VITE__PATH}/admin/product`;
+      let param = "";
       let method = "post";
-      // // // 判斷 isNew 是否為 新增
+      // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE__URL}/api/${VITE__PATH}/admin/product/${content.id}`;
+        param += content.id;
         method = "put";
       }
 
-      this.$http[method](url, {
-        data: content,
-      })
-        .then((res) => {
-          this.$refs.productModal.closeModal();
-          this.getProducts();
-          this.isNew = false;
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await updateProduct(method, param, { data: content });
+      this.$refs.productModal.closeModal();
+      await this.getProducts();
+      this.isNew = false;
+      await toast.fire({
+        icon: "success",
+        title: res.message,
+      });
     },
   },
-  mounted() {
+  async created() {
     useLoadingState().isLoading = true;
-    this.getProducts();
+    await this.getProducts();
   },
 };
 </script>

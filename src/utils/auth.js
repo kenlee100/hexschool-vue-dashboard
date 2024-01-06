@@ -12,5 +12,5 @@ function defineStorage(key) {
   };
 }
 
-export const localToken = defineStorage("admin-token");
+export const localToken = defineStorage("userToken");
 export const localUserName = defineStorage("username");

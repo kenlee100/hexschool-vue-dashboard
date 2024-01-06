@@ -36,7 +36,7 @@
                 <button
                   class="btn btn-lg btn-primary w-100 mt-3"
                   type="submit"
-                  @click.prevent="login"
+                  @click.prevent="submit"
                 >
                   登入
                 </button>
@@ -49,8 +49,9 @@
   </div>
 </template>
 <script>
-const { VITE__URL } = import.meta.env;
 import toast from "@/utils/toast";
+import { mapActions } from "pinia";
+import { userStore } from "@/stores/user";
 export default {
   data() {
     return {
@@ -61,21 +62,22 @@ export default {
     };
   },
   methods: {
-    login() {
-      this.$http
-        .post(`${VITE__URL}/admin/signin`, this.loginData)
-        .then((res) => {
-          const { token, expired } = res.data;
-          document.cookie = `userToken=${token}; expires=${new Date(expired)};`;
-          this.$router.push("/admin");
-        })
-        .catch((err) => {
-          toast.fire({
-            icon: "error",
-            title: `${err.data.message}`,
-          });
+    async submit() {
+      try {
+        const queryData = {
+          username: this.loginData.username.trim(),
+          password: this.loginData.password.trim(),
+        };
+        await this.login(queryData);
+        this.$router.push("/admin");
+      } catch (err) {
+        toast.fire({
+          icon: "error",
+          title: `${err.data.message}`,
         });
+      }
     },
+    ...mapActions(userStore, ["login"]),
   },
 };
 </script>

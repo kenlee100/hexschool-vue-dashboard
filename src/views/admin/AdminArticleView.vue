@@ -81,13 +81,19 @@
   />
 </template>
 <script>
-const { VITE__URL, VITE__PATH } = import.meta.env;
 import AdminArticleModalVue from "@/components/admin/AdminArticleModal.vue";
 import DelModal from "@/components/DelModal.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
 import toast from "@/utils/toast";
+import PaginationComponent from "@/components/PaginationComponent.vue";
 import { useLoadingState } from "@/stores/common.js";
+import {
+  getArticles,
+  getArticleItem,
+  deleteItem,
+  updateArticle,
+} from "@/apis/article.js";
 export default {
+  components: { AdminArticleModalVue, DelModal, PaginationComponent },
   data() {
     return {
       modal: {},
@@ -102,39 +108,18 @@ export default {
     };
   },
   methods: {
-    getArticles(num = 1) {
+    async getArticles(num = 1) {
       useLoadingState().isLoading = true;
-      this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/admin/articles/?page=${num}`)
-        .then((res) => {
-          this.articles = res.data.articles;
-          this.pagination = res.data.pagination;
-          useLoadingState().isLoading = false;
-        })
-        .catch((err) => {
-          // 顯示失敗資訊
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await getArticles(num);
+      console.log("res", res);
+      this.articles = res.articles;
+      this.pagination = res.pagination;
     },
-    getArticleItem(id) {
+    async getArticleItem(id) {
       useLoadingState().isLoading = true;
-      this.$http
-        .get(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
-        .then((res) => {
-          this.openModal("edit", res.data.article);
-          useLoadingState().isLoading = false;
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await getArticleItem(id);
+      this.openModal("edit", res.article);
+      useLoadingState().isLoading = false;
     },
     openModal(openMethod, item) {
       if (openMethod === "new") {
@@ -156,79 +141,48 @@ export default {
         this.$refs.deleteModal.openModal();
       }
     },
-    deleteItem(id) {
+    async deleteItem(id) {
+      const res = await deleteItem(id);
       useLoadingState().isLoading = true;
-      this.$http
-        .delete(`${VITE__URL}/api/${VITE__PATH}/admin/article/${id}`)
-        .then((res) => {
-          this.getArticles();
-          this.$refs.deleteModal.closeModal();
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      this.$refs.deleteModal.closeModal();
+      await this.getArticles();
+      toast.fire({
+        icon: "success",
+        title: res.message,
+      });
     },
     async updateArticle(content) {
       useLoadingState().isLoading = true;
-      let url = `${VITE__URL}/api/${VITE__PATH}/admin/article`;
+      let param = "";
       let method = "post";
-      // // // 判斷 isNew 是否為 新增
+      // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE__URL}/api/${VITE__PATH}/admin/article/${content.id}`;
+        param += content.id;
         method = "put";
       }
-      this.$http[method](url, {
-        data: content,
-      })
-        .then((res) => {
-          this.$refs.articleModal.closeModal();
-          this.getArticles();
-          this.isNew = false;
-          toast.fire({
-            icon: "success",
-            title: res.data.message,
-          });
-        })
-        .catch((err) => {
-          useLoadingState().isLoading = false;
-          toast.fire({
-            icon: "error",
-            title: `${err.response.data.message}`,
-          });
-        });
+      const res = await updateArticle(method, param, { data: content });
+      this.$refs.articleModal.closeModal();
+      await this.getArticles();
+      this.isNew = false;
+      await toast.fire({
+        icon: "success",
+        title: res.message,
+      });
+      useLoadingState().isLoading = false;
     },
     async switchUpdate(content) {
       useLoadingState().isLoading = true;
-      try {
-        const articleItem = await this.$http.get(
-          `${VITE__URL}/api/${VITE__PATH}/admin/article/${content.id}`
-        );
-        const updateContent = {
-          ...articleItem.data.article,
-          isPublic: content.isPublic,
-        };
-        await this.updateArticle(updateContent);
-      } catch (err) {
-        useLoadingState().isLoading = false;
-        toast.fire({
-          icon: "error",
-          title: `${err.response.data.message}`,
-        });
-      }
+      const articleItem = await getArticleItem(content.id);
+      const updateContent = {
+        ...articleItem.article,
+        isPublic: content.isPublic,
+      };
+      await this.updateArticle(updateContent);
     },
   },
-  mounted() {
+  async created() {
     useLoadingState().isLoading = true;
-    this.getArticles();
+    await this.getArticles();
   },
-  components: { AdminArticleModalVue, DelModal, PaginationComponent },
 };
 </script>
